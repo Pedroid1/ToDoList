@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/spacing_25"
+    android:layout_marginTop="@dimen/spacing_5"
+    android:layout_marginBottom="@dimen/spacing_6">
+
+    <com.example.todolistkotlin.presentation.components.CustomTextView
+        android:id="@+id/txt_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:textPriority="secondary"
+        android:text="Quinta-feira"
+        app:isTitle="true"
+        app:textType="body1" />
+
+</LinearLayout>

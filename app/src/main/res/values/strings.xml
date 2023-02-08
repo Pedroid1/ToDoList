@@ -1,0 +1,160 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name" translatable="false">To do list</string>
+
+    <string name="select_category">Selecione uma categoria</string>
+    <string name="type_task_name">Dê um título para a tarefa</string>
+    <string name="select_date">Selecione a data</string>
+    <string name="select_time">Marque o horário</string>
+    <string name="create_task_select_priority">Selecione uma prioridade</string>
+
+    <string name="task_day_title_without_year">%1$s %2$s de %3$s</string>
+    <string name="task_day_title_with_year">%1$s %2$s de %3$s de %4$s</string>
+
+    <string name="salute_with_username">Olá, %1$s!</string>
+    <string name="salute_without_username">Olá, seja bem-vindo!</string>
+
+    <!-- Transactions -->
+    <string name="task_transaction_name">task_transaction_%1$s</string>
+    <string name="task_detail_transaction">task_detail_transaction</string>
+
+    <string name="no_categories">Nenhuma categoria</string>
+    <string name="no_tasks">Nenhuma tarefa</string>
+    <string name="no_selected_date_task">Nenhuma tarefa na data selecionada</string>
+    <string name="delayed_tasks">Atrasadas</string>
+    <string name="yesterday_tasks">Ontem</string>
+    <string name="today_tasks">Hoje</string>
+    <string name="tomorrow_tasks">Amanhã</string>
+
+    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
+    <string name="notification_title">To do List App</string>
+
+    <string name="priority">Prioridade:</string>
+    <string name="create_task">Criar Tarefa</string>
+    <string name="task_title">Título da tarefa</string>
+
+    <string name="task_exemple">Reunião com o gestor</string>
+    <string name="description">Descrição</string>
+    <string name="task_description_example">Reunião sobre efetivação</string>
+    <string name="category">Categoria</string>
+    <string name="categories">Categorias</string>
+
+    <string name="select_category2">Escolha uma categoria</string>
+
+    <string name="date">Data</string>
+    <string name="hour">Hora</string>
+
+    <string name="priority2">Prioridade</string>
+    <string name="high">Alta</string>
+    <string name="medium">Media</string>
+    <string name="low">Baixa</string>
+    <string name="receive_notification">Lembrar-me</string>
+    <string name="create">Criar</string>
+    <string name="invalid_time">Selecione um horário válido</string>
+    <string name="select_date_error">Erro ao selecionar a data</string>
+    <string name="first_select_date_error">Primeiro selecione a data</string>
+    <string name="preencher_campo">Não esqueça de preencher este campo</string>
+    <string name="campo_obrigatorio">Campo obrigatório, preencha para continuar</string>
+    <string name="selecione_a_categoria">Por favor, selecione uma categoria</string>
+    <string name="selecione_a_prioridade">Selecione a prioridade da tarefa</string>
+    <string name="selecione_o_horario">Por favor, selecione um horário</string>
+    <string name="selecione_a_data_continuar">Por favor, selecione uma data</string>
+    <string name="task_deleted">Tarefa deletada</string>
+    <string name="undo">Desfazer</string>
+    <string name="complete_task">Tarefa concluida</string>
+    <string name="nome_da_categoria">Dê um nome para a categoria</string>
+    <string name="invalid_date">Data inválida</string>
+    <string name="profile">Perfil</string>
+    <string name="accessibility_back_arrow">Voltar</string>
+    <string name="category_already_exists">Já existe uma categoria com este nome</string>
+    <string name="select_a_category">Selecione uma categoria</string>
+    <string name="task_notification_description">Chegou a hora de iniciar sua tarefa - %1$s</string>
+    <string name="empty_task_list">Nenhuma tarefa</string>
+    <string name="empty_task_list_action">Clique no botão adicionar para criar.</string>
+
+    <string name="low_priority">Prioridade baixa </string>
+    <string name="medium_priority">Prioridade média</string>
+    <string name="high_priority">Prioridade alta</string>
+    <string name="create_category">Criar categoria</string>
+    <string name="criar_agora">Criar agora</string>
+    <string name="ainda_nao_tem_uma_conta">Ainda não tem uma conta?</string>
+    <string name="format_date">%1$s/%2$s/%3$s</string>
+    <string name="touch_helper_remove_item">Remover</string>
+    <string name="touch_helper_complete_item">Feito!</string>
+    <string name="add_task">Adicionar tarefa</string>
+    <string name="add_category_accessbility">Adicionar categoria</string>
+    <string name="bottom_nav_tasks">Tarefas</string>
+    <string name="bottom_nav_category">Categorias</string>
+    <string name="bottom_nav_notifications">Notificações</string>
+    <string name="bottom_nav_profile">Perfil</string>
+    <string name="delete_category">Excluir categoria</string>
+    <string name="sign_out_dialog">Sair da conta</string>
+    <string name="sign_out">Sair</string>
+    <string name="delete_category_info">Você perderá todas as tarefas associadas a essa categoria, tem certeza que deseja continuar?</string>
+    <string name="sign_out_info">Você tem certeza que deseja desvincular sua conta do Google ao aplicativo?</string>
+    <string name="loading">Carregando...</string>
+    <string name="yes">Sim</string>
+    <string name="no">Não</string>
+
+
+    <string name="tutorial_skip">Pular</string>
+    <string name="tutorial_title_step_1">Organize suas tarefas</string>
+    <string name="tutorial_description_step_1">Com o To Do App você pode criar categorias e tarefas para organizar seus afazeres do dia-a-dia</string>
+    <string name="tutorial_title_step_2">Complete suas tarefas</string>
+    <string name="tutorial_description_step_2">O App To Do te ajuda atingir seus objetivos dentro do prazo e previne esquecimentos.</string>
+    <string name="tutorial_title_step_3">Visualize seu esforço</string>
+    <string name="tutorial_description_step_3">Veja toda lista de atividades que você já completou, isso é simbolo de todo seu esforço</string>
+    <string name="tutorial_title_step_4">Por hoje é só</string>
+    <string name="tutorial_description_step_4">Você completou suas tarefas para hoje. </string>
+    <string name="calendar_fragment">Calendário</string>
+    <string name="task_list">Lista de tarefas</string>
+    <string name="continue_button">Continuar</string>
+
+    <!-- Category colors -->
+    <string name="category_color_1">#246BFD</string>
+    <string name="category_color_2">#F67A7A</string>
+    <string name="category_color_3">#129B8B</string>
+    <string name="category_color_4">#00EE26</string>
+    <string name="category_color_5">#7EB4FF</string>
+    <string name="category_color_6">#FF2D55</string>
+    <string name="category_color_7">#38AD51</string>
+    <string name="category_color_8">#4B50D2</string>
+    <string name="colors">Cores</string>
+    <string name="preview">Preview</string>
+    <string name="zero_tasks">0 tarefas</string>
+    <string name="configurations">Configurações</string>
+    <string name="dark_mode">Modo escuro</string>
+    <string name="logout">Sair</string>
+
+    <string name="all">Todas</string>
+    <string name="today">Hoje</string>
+    <string name="upcoming">Próximas</string>
+    <string name="completed">Completas</string>
+    <string name="completed_tasks">Tarefas concluidas</string>
+    <string name="open_tasks">Tarefas abertas</string>
+    <string name="statistics">Estatísticas</string>
+
+    <string name="error_creating_task">Houve um erro ao criar a tarefa</string>
+    <string name="error_removing_task">Houve um erro ao remover a tarefa da base de dados</string>
+    <string name="error_creating_category">Houve um erro ao criar a categoria</string>
+    <string name="delete_task_error">Erro ao deletar a tarefa</string>
+    <string name="delete_category_error">Erro ao deletar a categoria</string>
+    <string name="delete_tasks_by_category_error">Error ao deletar as tarefas</string>
+    <string name="get_data_error">Error ao buscar os dados</string>
+    <string name="complete_task_error">Error ao concluir a tarefa</string>
+    <string name="try_again">Tentar novamente</string>
+    <string name="msg_error">Alguma coisa deu errado, \nPor favor tente novamente.</string>
+    <string name="opps">Opps!</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="task">Tarefa</string>
+    <string name="starts_in">Inicia em</string>
+    <string name="delete">Excluir</string>
+    <string name="complete">Concluir</string>
+    <string name="tasks">Tarefas</string>
+    <string name="finished">Finalizadas</string>
+    <string name="settings">Configurações</string>
+    <string name="see_more">Ver mais</string>
+    <string name="connect_for_see_statistics">Conecte-se a internet para obter as estatísticas</string>
+
+
+</resources>

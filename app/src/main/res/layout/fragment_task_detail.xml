@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="task"
+            type="com.example.todolistkotlin.domain.model.Task" />
+
+        <variable
+            name="utils"
+            type="com.example.todolistkotlin.util.DateUtils" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/spacing_10"
+            tools:context=".presentation.fragment.TaskDetailFragment">
+
+            <com.example.todolistkotlin.presentation.components.CustomHeader
+                android:id="@+id/header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:headerTitle="@string/task"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:leftIcon="@drawable/close"
+                app:rightIcon="@drawable/more_horiz" />
+
+            <com.example.todolistkotlin.presentation.components.CustomTextView
+                android:id="@+id/txt_task_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/layout_margin"
+                android:layout_marginTop="@dimen/spacing_15"
+                android:text="@{task.title}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/header"
+                app:textPriority="primary"
+                app:textType="title1"
+                tools:text="Fazer o app" />
+
+            <com.example.todolistkotlin.presentation.components.CustomTextView
+                android:id="@+id/title_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/layout_margin"
+                android:layout_marginTop="@dimen/spacing_20"
+                android:text="@string/description"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txt_task_title"
+                app:layout_goneMarginStart="@dimen/layout_margin"
+                app:textPriority="primary"
+                app:textType="title3" />
+
+            <com.example.todolistkotlin.presentation.components.CustomTextView
+                android:id="@+id/txt_description"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/layout_margin"
+                android:layout_marginTop="@dimen/spacing_4"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/title_description"
+                app:textType="body1"
+                tools:text="-" />
+
+            <com.example.todolistkotlin.presentation.components.CustomTextView
+                android:id="@+id/title_starts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/layout_margin"
+                android:layout_marginTop="@dimen/spacing_15"
+                android:text="@string/starts_in"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txt_description"
+                app:textPriority="primary"
+                app:textType="title3" />
+
+            <ImageView
+                android:id="@+id/ic_calendar"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="@dimen/layout_margin"
+                android:layout_marginTop="@dimen/spacing_3"
+                android:src="@drawable/ic_calendar"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/title_starts" />
+
+            <com.example.todolistkotlin.presentation.components.CustomTextView
+                android:id="@+id/txt_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_6"
+                android:text="@{utils.Companion.getCompleteDate(task.dateInMills)}"
+                app:layout_constraintBottom_toBottomOf="@id/ic_calendar"
+                app:layout_constraintStart_toEndOf="@id/ic_calendar"
+                app:layout_constraintTop_toTopOf="@id/ic_calendar"
+                tools:text="12 de agosto de 2022" />
+
+            <ImageView
+                android:id="@+id/ic_time"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="@dimen/layout_margin"
+                android:layout_marginTop="@dimen/spacing_8"
+                android:src="@drawable/ic_time"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ic_calendar" />
+
+            <com.example.todolistkotlin.presentation.components.CustomTextView
+                android:id="@+id/txt_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_6"
+                android:text="@{utils.Companion.longIntoTime(task.dateInMills)}"
+                app:layout_constraintBottom_toBottomOf="@id/ic_time"
+                app:layout_constraintStart_toEndOf="@id/ic_time"
+                app:layout_constraintTop_toTopOf="@id/ic_time"
+                tools:text="10:00" />
+
+            <com.example.todolistkotlin.presentation.components.CustomTextView
+                android:id="@+id/title_priority"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/layout_margin"
+                android:layout_marginTop="@dimen/spacing_15"
+                android:text="@string/priority2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ic_time"
+                app:textPriority="primary"
+                app:textType="title3" />
+
+            <ImageView
+                android:id="@+id/flag"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_marginTop="@dimen/spacing_5"
+                android:focusable="false"
+                android:importantForAccessibility="yes"
+                android:src="@drawable/ic_circle"
+                app:layout_constraintStart_toStartOf="@id/title_priority"
+                app:layout_constraintTop_toBottomOf="@id/title_priority" />
+
+            <com.example.todolistkotlin.presentation.components.CustomTextView
+                android:id="@+id/txt_priority"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_6"
+                app:layout_constraintBottom_toBottomOf="@id/flag"
+                app:layout_constraintStart_toEndOf="@id/flag"
+                app:layout_constraintTop_toTopOf="@id/flag"
+                tools:text="Alta" />
+
+            <com.example.todolistkotlin.presentation.components.CustomTextView
+                android:id="@+id/title_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/layout_margin"
+                android:layout_marginTop="@dimen/spacing_15"
+                android:text="@string/category"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txt_priority"
+                app:textPriority="primary"
+                app:textType="title3" />
+
+            <include
+                android:id="@+id/layout_category"
+                layout="@layout/category_item"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_3"
+                app:layout_constraintStart_toStartOf="@id/title_category"
+                app:layout_constraintTop_toBottomOf="@id/title_category" />
+
+            <com.example.todolistkotlin.presentation.components.CustomButton
+                android:id="@+id/btn_delete_open_task"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/layout_margin"
+                android:layout_marginTop="@dimen/spacing_40"
+                android:layout_marginEnd="@dimen/spacing_10"
+                android:clickable="false"
+                android:text="@string/delete"
+                android:visibility="@{!task.completed ? View.VISIBLE : View.INVISIBLE}"
+                app:buttonPriority="secondary"
+                app:layout_constraintEnd_toStartOf="@id/btn_complete"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/layout_category" />
+
+            <com.example.todolistkotlin.presentation.components.CustomButton
+                android:id="@+id/btn_complete"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_10"
+                android:layout_marginEnd="@dimen/layout_margin"
+                android:clickable="false"
+                android:text="@string/complete"
+                android:visibility="@{!task.completed ? View.VISIBLE : View.INVISIBLE}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btn_delete_open_task"
+                app:layout_constraintTop_toTopOf="@id/btn_delete_open_task" />
+
+            <com.example.todolistkotlin.presentation.components.CustomButton
+                android:id="@+id/btn_delete_finished_task"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/layout_margin"
+                android:clickable="false"
+                android:text="@string/delete"
+                android:visibility="@{task.completed ? View.VISIBLE : View.INVISIBLE}"
+                app:buttonPriority="secondary"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/btn_delete_open_task" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</layout>

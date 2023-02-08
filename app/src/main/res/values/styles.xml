@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="input_layout_outlined_spinner" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
+        <item name="hintEnabled">false</item>
+        <item name="errorEnabled">true</item>
+        <item name="paddingStart">15dp</item>
+    </style>
+
+    <style name="input_layout_outlined" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="hintEnabled">false</item>
+        <item name="errorEnabled">true</item>
+    </style>
+
+    <style name="edit_text_custom" parent="Base.Widget.MaterialComponents.TextInputEditText">
+        <item name="fontFamily">@font/poppins_regular</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:paddingTop">15dp</item>
+        <item name="android:paddingBottom">15dp</item>
+        <item name="android:paddingStart">13dp</item>
+        <item name="android:paddingEnd">13dp</item>
+    </style>
+
+    <!-- Bottom Navigation -->
+    <style name="theme_bottom_navigation" parent="Theme.ToDoListKotlin"/>
+
+    <style name="bottom_navigation" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="backgroundTint">@color/transparency</item>
+        <item name="theme">@style/theme_bottom_navigation</item>
+    </style>
+
+    <style name="cardview_without_border" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardElevation">4dp</item>
+        <item name="cardCornerRadius">5dp</item>
+        <item name="theme">@style/cardview_theme</item>
+    </style>
+
+    <style name="cardview_with_border" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardElevation">4dp</item>
+        <item name="cardCornerRadius">5dp</item>
+    </style>
+
+    <style name="cardview_theme" parent="Theme.ToDoListKotlin" >
+        <item name="colorOutline">@color/transparency</item>
+    </style>
+
+    <style name="floating_action_button" parent="Widget.MaterialComponents.FloatingActionButton" >
+      <item name="theme">@style/floating_action_button_theme</item>
+    </style>
+
+    <style name="floating_action_button_theme" parent="Theme.ToDoListKotlin" >
+            <item name="colorSecondary">?attr/colorPrimary</item>
+    </style>
+
+</resources>

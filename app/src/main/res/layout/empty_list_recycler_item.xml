@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/spacing_50"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <com.example.todolistkotlin.presentation.components.CustomTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Nenhuma tarefa"
+        app:textPriority="primary"
+        app:textType="title3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/txt1"/>
+
+    <com.example.todolistkotlin.presentation.components.CustomTextView
+        android:layout_width="wrap_content"
+        android:layout_marginTop="@dimen/spacing_2"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/txt1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:textPriority="secondary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:textType="subtitle2"
+        tools:text="Clique no botão adicionar para criar uma tarefa"
+        android:id="@+id/txt2" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

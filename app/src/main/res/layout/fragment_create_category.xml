@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.example.todolistkotlin.presentation.components.CustomHeader
+            android:id="@+id/header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:headerTitle="@string/create_category"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:leftIcon="@drawable/ic_back_arrow"
+            app:leftIconContentDescription="@string/accessibility_back_arrow" />
+
+        <com.example.todolistkotlin.presentation.components.CustomTextView
+            android:id="@+id/cv_category"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/layout_margin"
+            app:textPriority="secondary"
+            android:layout_marginTop="@dimen/margin_between_header"
+            android:text="Dê um nome para a categoria"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/header"
+            app:textType="subtitle1" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/category_input"
+            style="@style/input_layout_outlined"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/layout_margin"
+            android:layout_marginTop="@dimen/margin_between_title_and_edt"
+            android:layout_marginEnd="@dimen/layout_margin"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cv_category">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/category_edt"
+                style="@style/edit_text_custom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Trabalho"
+                android:inputType="textNoSuggestions" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.example.todolistkotlin.presentation.components.CustomTextView
+            android:id="@+id/txt_choose_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/layout_margin"
+            app:textPriority="secondary"
+            android:layout_marginTop="@dimen/margin_between_edt_box"
+            android:text="Escolha um ícone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/category_input"
+            app:textType="subtitle1" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_icons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_5"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/spacing_10"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txt_choose_icon"
+            app:spanCount="1"
+            tools:listitem="@layout/icon_layout" />
+
+        <com.example.todolistkotlin.presentation.components.CustomTextView
+            android:id="@+id/txt_colors"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:textPriority="secondary"
+            android:layout_marginStart="@dimen/layout_margin"
+            android:layout_marginTop="@dimen/spacing_10"
+            android:text="@string/colors"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/rv_icons"
+            app:textType="subtitle1" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/color_rv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_5"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/spacing_10"
+            android:paddingEnd="@dimen/layout_margin"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txt_colors"
+            tools:itemCount="8"
+            tools:listitem="@layout/color_item" />
+
+        <com.example.todolistkotlin.presentation.components.CustomTextView
+            android:id="@+id/preview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_30"
+            android:text="@string/preview"
+            app:textPriority="secondary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/color_rv"
+            app:textType="subtitle1" />
+
+        <include
+            android:id="@+id/view_category_item"
+            layout="@layout/category_item"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_8"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/preview" />
+
+        <com.example.todolistkotlin.presentation.components.CustomButton
+            android:id="@+id/create_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/layout_margin"
+            android:layout_marginTop="@dimen/spacing_50"
+            android:layout_marginBottom="@dimen/layout_margin"
+            android:text="@string/create"
+            app:buttonPriority="primary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view_category_item" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

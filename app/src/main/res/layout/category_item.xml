@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="category"
+            type="com.example.todolistkotlin.domain.model.Category" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/root_layout"
+        style="@style/cardview_without_border"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_5"
+        android:layout_marginEnd="@dimen/spacing_5"
+        android:layout_marginBottom="@dimen/spacing_15"
+        android:screenReaderFocusable="true">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/category_layout"
+            android:layout_width="match_parent"
+            android:paddingBottom="@dimen/spacing_10"
+            android:layout_height="wrap_content"
+            tools:background="?attr/colorPrimary">
+
+            <ImageView
+                android:id="@+id/img_category"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_marginStart="@dimen/spacing_12"
+                android:layout_marginTop="@dimen/spacing_15"
+                android:importantForAccessibility="no"
+                android:scaleType="centerCrop"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.example.todolistkotlin.presentation.components.CustomTextView
+                android:id="@+id/category_name_txt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_8"
+                android:layout_marginTop="@dimen/spacing_5"
+                android:layout_marginEnd="@dimen/spacing_8"
+                android:ellipsize="end"
+                android:focusable="false"
+                android:maxLines="1"
+                android:text="@{category.name}"
+                android:textColor="@color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/img_category"
+                app:layout_goneMarginStart="@dimen/spacing_10"
+                app:textType="title3"
+                tools:text="Outros" />
+
+            <com.example.todolistkotlin.presentation.components.CustomTextView
+                android:id="@+id/total_task_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:text="@string/zero_tasks"
+                android:textColor="@color/white_15_transparency"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@id/category_name_txt"
+                app:layout_constraintTop_toBottomOf="@id/category_name_txt"
+                app:layout_constraintVertical_bias="0"
+                app:textType="body2" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+</layout>

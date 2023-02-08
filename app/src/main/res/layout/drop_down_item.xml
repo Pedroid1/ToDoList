@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.example.todolistkotlin.presentation.components.CustomTextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:ellipsize="end"
+    android:maxLines="1"
+    android:padding="@dimen/spacing_10"
+    android:textColor="?attr/colorOnSurface"
+    app:textType="body1"
+    tools:text="Trabalho">
+
+</com.example.todolistkotlin.presentation.components.CustomTextView>

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="item"
+            type="com.example.todolistkotlin.presentation.model.TaskWithCategory" />
+
+        <variable
+            name="listener"
+            type="com.example.todolistkotlin.presentation.adapter.recycler.HomeRecyclerAdapter.TaskAdapterListener" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/task_card"
+        style="@style/cardview_with_border"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/layout_margin"
+        android:layout_marginBottom="@dimen/spacing_20"
+        android:backgroundTint="?attr/colorTertiaryContainer"
+        android:onClick="@{(view) -> listener.onTaskClicked(item)}"
+        android:screenReaderFocusable="true"
+        android:transitionName="@{@string/task_transaction_name(item.task.id)}">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/spacing_6">
+
+            <LinearLayout
+                android:id="@+id/cv_category"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/layout_margin"
+                app:layout_constraintEnd_toStartOf="@id/txt_hour"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/cardview_without_border"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:elevation="5dp"
+                    android:minWidth="120dp"
+                    app:cardCornerRadius="@dimen/spacing_2">
+
+                    <com.example.todolistkotlin.presentation.components.CustomTextView
+                        android:id="@+id/txt_category"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:focusable="false"
+                        android:gravity="center"
+                        android:maxLines="1"
+                        android:minWidth="120dp"
+                        android:paddingHorizontal="@dimen/spacing_5"
+                        android:paddingTop="@dimen/spacing_3"
+                        android:paddingBottom="@dimen/spacing_3"
+                        android:text="@{item.category.name}"
+                        android:textColor="?attr/colorSurface"
+                        app:textType="subtitle1"
+                        tools:background="@color/light_blue_1"
+                        tools:text="Trabalho" />
+
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/flag"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:layout_marginTop="@dimen/spacing_3"
+                android:layout_marginEnd="@dimen/spacing_10"
+                android:focusable="false"
+                android:importantForAccessibility="yes"
+                android:src="@drawable/ic_circle"
+                app:layout_constraintBottom_toBottomOf="@id/cv_category"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/cv_category" />
+
+            <com.example.todolistkotlin.presentation.components.CustomTextView
+                android:id="@+id/txt_hour"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_2"
+                android:layout_marginEnd="@dimen/spacing_10"
+                android:focusable="false"
+                android:gravity="center"
+                app:layout_constraintBottom_toBottomOf="@id/flag"
+                app:layout_constraintEnd_toStartOf="@id/flag"
+                app:layout_constraintTop_toTopOf="@id/flag"
+                app:layout_goneMarginEnd="@dimen/spacing_5"
+                app:textPriority="secondary"
+                app:textType="subtitle2"
+                tools:text="10:00" />
+
+            <com.example.todolistkotlin.presentation.components.CustomTextView
+                android:id="@+id/task_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/spacing_10"
+                android:layout_marginTop="@dimen/spacing_10"
+                android:ellipsize="end"
+                android:focusable="false"
+                android:maxLines="1"
+                android:text="@{item.task.title}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cv_category"
+                app:textPriority="primary"
+                app:textType="title2"
+                tools:text="Detalhes dos saldos" />
+
+            <com.example.todolistkotlin.presentation.components.CustomTextView
+                android:id="@+id/txt_description"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:focusable="false"
+                android:maxLines="2"
+                android:text="@{item.task.description}"
+                app:layout_constraintEnd_toEndOf="@id/task_title"
+                app:layout_constraintStart_toStartOf="@id/task_title"
+                app:layout_constraintTop_toBottomOf="@id/task_title"
+                app:textPriority="secondary"
+                app:textType="body2"
+                tools:text="Terminar o aplicativo antes de sexta-feira" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>
