@@ -67,4 +67,4 @@ fun View.showSnackBarWithAction(
 
 fun ImageView.loadImage(@DrawableRes resId: Int) = Picasso.get().load(resId).into(this)
 
-fun ImageView.loadImage(url: String) = Picasso.get().load(url).into(this)
+fun ImageView.loadImage(url: String) = Picasso.get().load(url).fit().centerInside().into(this)

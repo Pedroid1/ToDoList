@@ -1,4 +1,4 @@
-package com.example.todolistkotlin.presentation
+package com.example.todolistkotlin.presentation.utils
 
 import android.content.Context
 import androidx.annotation.StringRes

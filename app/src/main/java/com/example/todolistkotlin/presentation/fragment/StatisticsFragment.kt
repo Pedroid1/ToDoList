@@ -1,4 +1,4 @@
-package com.example.todolistkotlin
+package com.example.todolistkotlin.presentation.fragment
 
 import android.graphics.Color
 import android.graphics.Typeface
@@ -12,8 +12,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.todolistkotlin.databinding.FragmentStatisticsBinding
 import com.example.todolistkotlin.domain.model.Category
 import com.example.todolistkotlin.domain.model.Task
-import com.example.todolistkotlin.presentation.states.MainViewState
-import com.example.todolistkotlin.presentation.viewmodel.MainViewModel
+import com.example.todolistkotlin.presentation.states.HomeViewState
+import com.example.todolistkotlin.presentation.viewmodel.HomeViewModel
 import com.example.todolistkotlin.util.observe
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.components.Legend
@@ -24,6 +24,9 @@ import com.github.mikephil.charting.formatter.*
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.github.mikephil.charting.utils.MPPointF
 import android.R.attr.colorBackground
+import com.example.todolistkotlin.R
+import com.example.todolistkotlin.presentation.states.CategoryViewState
+import com.example.todolistkotlin.presentation.viewmodel.CategoryViewModel
 import com.example.todolistkotlin.util.Utils
 import com.google.android.material.R.attr.colorOnBackground
 import com.google.android.material.color.MaterialColors
@@ -32,7 +35,8 @@ import com.google.android.material.color.MaterialColors
 class StatisticsFragment : Fragment() {
 
     private lateinit var _binding: FragmentStatisticsBinding
-    private val mainViewModel: MainViewModel by lazy { ViewModelProvider(requireActivity())[MainViewModel::class.java] }
+    private val homeViewModel: HomeViewModel by lazy { ViewModelProvider(requireActivity())[HomeViewModel::class.java] }
+    private val categoryViewModel: CategoryViewModel by lazy { ViewModelProvider(requireActivity())[CategoryViewModel::class.java] }
 
     private var font: Typeface? = null
     private var textColor: Int? = null
@@ -48,7 +52,6 @@ class StatisticsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         initialWork()
         prepareViewListener()
         observer()
@@ -64,25 +67,34 @@ class StatisticsFragment : Fragment() {
 
             chipTask.setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
-                    populateTaskChart(mainViewModel.taskList)
+                    populateTaskChart(homeViewModel.taskList)
                 }
             }
 
             chipCategory.setOnCheckedChangeListener { _, isChecked ->
                 if(isChecked) {
-                    populateCategoryChart(mainViewModel.categoriesList, mainViewModel.taskList)
+                    populateCategoryChart(categoryViewModel.categoriesList, homeViewModel.taskList)
                 }
             }
         }
     }
 
     private fun observer() {
-        viewLifecycleOwner.observe(mainViewModel.homeViewState, ::handleMainViewState)
+        viewLifecycleOwner.observe(homeViewModel.homeViewState, ::handleMainViewState)
+        viewLifecycleOwner.observe(categoryViewModel.categoryViewState, ::handleCategoryViewState)
     }
 
-    private fun handleMainViewState(mainViewState: MainViewState) {
-        if (mainViewState.taskList != null && mainViewState.categoryList != null) {
-            populateTaskChart(mainViewState.taskList)
+    private fun handleMainViewState(homeViewState: HomeViewState) {
+        if (homeViewState.taskList != null) {
+            populateTaskChart(homeViewState.taskList)
+        }
+        homeViewState.error?.let {
+            //TODO
+        }
+    }
+    private fun handleCategoryViewState(categoryViewState: CategoryViewState) {
+        categoryViewState.error?.let {
+            //TODO
         }
     }
 
@@ -141,7 +153,7 @@ class StatisticsFragment : Fragment() {
     }
 
     private fun getQtdTaskWithCategory(id: String, taskList: List<Task>): Int {
-        return taskList.count { it.categoryId == id }
+        return taskList.count { it.category?.id == id }
     }
 
     private fun getPieDataSet(entries: java.util.ArrayList<PieEntry>, label: String): PieDataSet {
@@ -172,6 +184,9 @@ class StatisticsFragment : Fragment() {
 
 
     private fun initialWork() {
+        _binding.categoryViewModelXml = categoryViewModel
+        _binding.lifecycleOwner = viewLifecycleOwner
+
         font = ResourcesCompat.getFont(requireContext(), R.font.poppins_medium)
         textColor = MaterialColors.getColor(_binding.root, colorOnBackground)
         holeColor = MaterialColors.getColor(_binding.root, colorBackground)

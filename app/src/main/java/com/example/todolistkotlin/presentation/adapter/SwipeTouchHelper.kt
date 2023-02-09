@@ -24,7 +24,7 @@ class SwipeTouchHelper(
     private val onEventListener: OnTaskEvent
 ) : ItemTouchHelper.SimpleCallback(dragDirs, swipeDirs) {
 
-    private var taskFilter: TaskFilter = TaskFilter.All
+    private var taskFilter: TaskFilter = TaskFilter.All()
 
     fun setTaskFilter(taskFilter: TaskFilter) {
         this.taskFilter = taskFilter
@@ -72,10 +72,10 @@ class SwipeTouchHelper(
 
         when (direction) {
             ItemTouchHelper.LEFT -> {
-                onEventListener.onTaskEvent(TaskEvent.Delete(recyclerItem.item.task))
+                onEventListener.onTaskEvent(TaskEvent.Delete(recyclerItem.task))
             }
             ItemTouchHelper.RIGHT -> {
-                onEventListener.onTaskEvent(TaskEvent.Complete(recyclerItem.item.task))
+                onEventListener.onTaskEvent(TaskEvent.Complete(recyclerItem.task))
             }
             else -> Unit
         }

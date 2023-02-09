@@ -1,13 +1,12 @@
 package com.example.todolistkotlin.domain.use_case.validation.create_task
 
 import com.example.todolistkotlin.R
-import com.example.todolistkotlin.domain.model.Category
 import com.example.todolistkotlin.domain.use_case.validation.ValidationResult
-import com.example.todolistkotlin.presentation.UiText
+import com.example.todolistkotlin.presentation.utils.UiText
 
 class ValidateCategory {
-    operator fun invoke(category: Category?): ValidationResult {
-        return if(category == null) {
+    operator fun invoke(categoryId: String?): ValidationResult {
+        return if(categoryId == null || categoryId.isEmpty()) {
             ValidationResult(
                 successful = false,
                 UiText.StringResource(R.string.select_category)

@@ -5,12 +5,21 @@ import com.example.todolistkotlin.di.TasksRef
 import com.example.todolistkotlin.common.Response
 import com.example.todolistkotlin.domain.model.Task
 import com.example.todolistkotlin.common.Constants.FIELD_DATE
+import com.example.todolistkotlin.data.model.TaskEntity
+import com.example.todolistkotlin.data.model.toTask
+import com.example.todolistkotlin.domain.model.Category
 import com.example.todolistkotlin.domain.repository.*
+import com.example.todolistkotlin.enuns.EnumTaskPriority
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -23,8 +32,25 @@ class TaskRepositoryImpl @Inject constructor(
     override suspend fun getTasks() = callbackFlow {
         val snapshotListener = taskReferenceOrderByData.addSnapshotListener { snapshot, e ->
             val tasksResponse = if (snapshot != null) {
-                val tasks = snapshot.toObjects(Task::class.java)
-                Response.Success(tasks)
+                val tasks = snapshot.toObjects(TaskEntity::class.java)
+                val tasksWithCategoryList = mutableListOf<Task>()
+
+                runBlocking {
+                    tasks.forEach { taskEntity ->
+                        launch(Dispatchers.IO) {
+                            val category = async {
+                                if(taskEntity.categoryRef != null) taskEntity.categoryRef!!.get().await()
+                                    .toObject(Category::class.java)
+                                else null
+                            }
+                            tasksWithCategoryList.add(
+                                taskEntity.toTask(category.await())
+                            )
+                        }
+                    }
+                }
+
+                Response.Success(tasksWithCategoryList)
             } else {
                 Response.Failure(e)
             }
@@ -35,10 +61,17 @@ class TaskRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun addTask(task: Task): AddTaskResponse {
+    override suspend fun addTask(title: String, description: String, categoryRef: DocumentReference, priority: EnumTaskPriority, taskDate: Long): AddTaskResponse {
         return try {
             val id = tasksRef.document().id
-            task.id = id
+            val task = TaskEntity(
+                id,
+                title,
+                description,
+                categoryRef,
+                priority,
+                taskDate
+            )
             tasksRef.document(id).set(task).await()
             Response.Success(true)
         } catch (e: Exception) {

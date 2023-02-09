@@ -135,6 +135,7 @@
 
     <string name="error_creating_task">Houve um erro ao criar a tarefa</string>
     <string name="error_removing_task">Houve um erro ao remover a tarefa da base de dados</string>
+    <string name="error_fetching_categories">Houve um erro ao carregar suas categorias</string>
     <string name="error_creating_category">Houve um erro ao criar a categoria</string>
     <string name="delete_task_error">Erro ao deletar a tarefa</string>
     <string name="delete_category_error">Erro ao deletar a categoria</string>

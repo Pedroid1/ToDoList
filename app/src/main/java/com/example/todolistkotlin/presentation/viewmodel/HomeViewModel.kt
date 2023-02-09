@@ -6,18 +6,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.todolistkotlin.R
 import com.example.todolistkotlin.domain.business.MainActivityModel
-import com.example.todolistkotlin.domain.model.Category
 import com.example.todolistkotlin.presentation.model.HomeRecyclerViewItem
 import com.example.todolistkotlin.common.Response
 import com.example.todolistkotlin.domain.model.Task
-import com.example.todolistkotlin.domain.repository.DeleteCategoryResponse
-import com.example.todolistkotlin.domain.use_case.category.CategoryUseCases
 import com.example.todolistkotlin.domain.use_case.task.TaskUseCases
 import com.example.todolistkotlin.domain.utils.TaskFilter
-import com.example.todolistkotlin.presentation.UiText
-import com.example.todolistkotlin.presentation.model.CategoryRecyclerViewItem
-import com.example.todolistkotlin.presentation.model.TaskWithCategory
-import com.example.todolistkotlin.presentation.states.MainViewState
+import com.example.todolistkotlin.presentation.utils.UiText
+import com.example.todolistkotlin.presentation.states.HomeViewState
 import com.example.todolistkotlin.presentation.states.UserInfoState
 import com.example.todolistkotlin.presentation.ui_events.ErrorEvent
 import com.example.todolistkotlin.presentation.ui_events.TaskEvent
@@ -35,10 +30,9 @@ import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 @HiltViewModel
-class MainViewModel @Inject constructor(
+class HomeViewModel @Inject constructor(
     private val model: MainActivityModel,
-    private val taskUseCases: TaskUseCases,
-    private val categoryUseCases: CategoryUseCases
+    private val taskUseCases: TaskUseCases
 ) : ViewModel() {
 
     private var pendingTaskDelete: Task? = null
@@ -46,8 +40,8 @@ class MainViewModel @Inject constructor(
 
     var selectedTimeCalendarFragment: Long? = null
 
-    private val _mainViewState = MutableLiveData<MainViewState>()
-    val homeViewState get() = _mainViewState
+    private val _homeViewState = MutableLiveData(HomeViewState())
+    val homeViewState get() = _homeViewState
 
     private val _userInfoState = MutableLiveData<UserInfoState>()
     val userInfoState get() = _userInfoState
@@ -59,39 +53,38 @@ class MainViewModel @Inject constructor(
     val taskEvent = _taskEventChannel.receiveAsFlow()
 
     var taskList: MutableList<Task> = ArrayList()
-    var categoriesList: List<Category> = ArrayList()
 
-    val coroutineHandler = CoroutineExceptionHandler { _, throwable ->
+
+    private val coroutineHandler = CoroutineExceptionHandler { _, throwable ->
         Log.d("coroutineHandler", "Exception: $throwable")
     }
 
     init {
         selectedTimeCalendarFragment = DateUtils.getTimeInMillisResetedTime(Calendar.getInstance())
         getUserInfo()
-        _mainViewState.value = MainViewState(
-            false,
-            null,
-            null,
-            null
-        )
         getTasksFromRepository()
     }
 
-    private fun getUserInfo() = viewModelScope.launch(Dispatchers.IO + coroutineHandler) {
+    private fun getUserInfo() = viewModelScope.launch(Dispatchers.IO) {
         val user = Firebase.auth.currentUser
         user?.let {
+            val photoUrl = try {
+                user.photoUrl.toString().split("=s").first() + "=s200-c"
+            } catch (e: Exception) {
+                user.photoUrl.toString()
+            }
             _userInfoState.postValue(
                 UserInfoState(
                     user.displayName,
                     user.email,
-                    user.photoUrl
+                    photoUrl
                 )
             )
         }
     }
 
     fun setTaskFilter(taskFilter: TaskFilter) {
-        _mainViewState.value = _mainViewState.value?.copy(taskFilter = taskFilter)
+        _homeViewState.value = _homeViewState.value?.copy(taskFilter = taskFilter)
     }
 
     fun onTaskEvent(event: TaskEvent) {
@@ -120,7 +113,7 @@ class MainViewModel @Inject constructor(
     private fun restoreFakeDeletion(task: Task) {
         if (taskList.find { it.id == task.id } == null) {
             taskList.add(task)
-            _mainViewState.value = _mainViewState.value?.copy(taskList = taskList)
+            _homeViewState.value = _homeViewState.value?.copy(taskList = taskList)
         }
         pendingTaskDelete = null
     }
@@ -129,14 +122,14 @@ class MainViewModel @Inject constructor(
         val index = taskList.indexOf(completeTask)
         completeTask.completed = false
         taskList[index] = completeTask
-        _mainViewState.value = _mainViewState.value?.copy(taskList = taskList)
+        _homeViewState.value = _homeViewState.value?.copy(taskList = taskList)
         pendingTaskComplete = null
     }
 
     private fun fakeDeletion(task: Task) {
         pendingTaskDelete = task
         taskList.remove(task)
-        _mainViewState.value = _mainViewState.value?.copy(taskList = taskList)
+        _homeViewState.value = _homeViewState.value?.copy(taskList = taskList)
     }
 
     private fun fakeComplete(completeTask: Task) {
@@ -144,33 +137,30 @@ class MainViewModel @Inject constructor(
         completeTask.completed = true
         pendingTaskComplete = completeTask
         taskList[index] = completeTask
-        _mainViewState.value = _mainViewState.value?.copy(taskList = taskList)
+        _homeViewState.value = _homeViewState.value?.copy(taskList = taskList)
     }
 
     //---------------------TASKS----------------
 
     suspend fun getRecyclerViewMainList(
         taskList: List<Task>,
-        categoriesList: List<Category>,
         taskFilter: TaskFilter
     ): List<HomeRecyclerViewItem> {
-        return model.getRecyclerViewMainList(taskList, categoriesList, taskFilter)
+        return model.getRecyclerViewMainList(taskList, taskFilter)
     }
 
     suspend fun getRecyclerViewMainListFilterDate(
         baseTimeInMillis: Long,
-        taskList: List<Task>,
-        categoryList: List<Category>
+        taskList: List<Task>
     ): List<HomeRecyclerViewItem> {
         return model.getRecyclerViewCalendarList(
             baseTimeInMillis,
-            taskList,
-            categoryList
+            taskList
         )
     }
 
     private fun getTasksFromRepository() =
-        viewModelScope.launch(Dispatchers.IO + coroutineHandler) {
+        viewModelScope.launch(Dispatchers.IO) {
             taskUseCases.getTasks().collect { response ->
                 when (response) {
                     is Response.Success -> {
@@ -193,12 +183,20 @@ class MainViewModel @Inject constructor(
                                 response.data.add(currentIndex!!, it)
                             }
                         }
-                        taskList = response.data
-                        getCategoriesFromRepository()
+
+                        Log.d("Teste", "antes")
+                        taskList = removeTaskWithNullCategory(response.data).toMutableList()
+                        Log.d("Teste", "Passou")
+                        updateMainViewState(
+                            _homeViewState.value?.copy(
+                                isFetchCompleted = true,
+                                taskList = taskList
+                            )
+                        )
                     }
                     is Response.Failure -> {
-                        _mainViewState.postValue(
-                            _mainViewState.value?.copy(
+                        updateMainViewState(
+                            _homeViewState.value?.copy(
                                 error = ErrorEvent(
                                     UiText.StringResource(
                                         R.string.get_data_error
@@ -211,7 +209,7 @@ class MainViewModel @Inject constructor(
             }
         }
 
-    fun deleteTask(taskId: String) = viewModelScope.launch(Dispatchers.IO + coroutineHandler) {
+    fun deleteTask(taskId: String) = viewModelScope.launch(Dispatchers.IO) {
         when (taskUseCases.deleteTask(taskId)) {
             is Response.Failure -> {
                 _errorEventChannel.send(ErrorEvent(UiText.StringResource(R.string.error_removing_task)))
@@ -220,7 +218,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun completeTask(task: Task) = viewModelScope.launch(Dispatchers.IO + coroutineHandler) {
+    fun completeTask(task: Task) = viewModelScope.launch(Dispatchers.IO) {
         when (taskUseCases.updateTask(task)) {
             is Response.Failure -> {
                 _errorEventChannel.send(ErrorEvent(UiText.StringResource(R.string.complete_task_error)))
@@ -229,63 +227,13 @@ class MainViewModel @Inject constructor(
         }
     }
 
-
-    //------------------CATEGORIES---------------------
-    private fun getCategoriesFromRepository() =
-        viewModelScope.launch(Dispatchers.IO + coroutineHandler) {
-            categoryUseCases.getCategories().collect { result ->
-                when (result) {
-                    is Response.Success -> {
-                        categoriesList = result.data
-                        taskList = clearTaskWithoutCategory(taskList, categoriesList)
-                        _mainViewState.postValue(
-                            _mainViewState.value?.copy(
-                                isComplete = true,
-                                categoryList = result.data,
-                                taskList = taskList
-                            )
-                        )
-                    }
-                    is Response.Failure -> {
-                        _mainViewState.postValue(
-                            _mainViewState.value?.copy(
-                                error = ErrorEvent(
-                                    UiText.StringResource(
-                                        R.string.get_data_error
-                                    )
-                                )
-                            )
-                        )
-                    }
-                }
-            }
+    private fun updateMainViewState(copy: HomeViewState?) =
+        viewModelScope.launch(Dispatchers.Main) {
+            copy?.let { _homeViewState.value = it }
         }
 
-    private fun clearTaskWithoutCategory(taskList: List<Task>, categoriesList: List<Category>) : MutableList<Task> {
-        val tempList = taskList.toMutableList()
-        taskList.forEach { task ->
-            if(categoriesList.find { it.id == task.categoryId } == null) {
-                tempList.remove(task)
-            }
-        }
-        return tempList
-    }
-
-    fun deleteCategory(id: String) = viewModelScope.launch(Dispatchers.IO + coroutineHandler) {
-        launch {
-            taskUseCases.deleteTaskByCategory(id)
-        }
-        launch {
-            when (categoryUseCases.deleteCategory(id)) {
-                is Response.Failure -> {
-                    _errorEventChannel.send(ErrorEvent(UiText.StringResource(R.string.delete_category_error)))
-                }
-                else -> Unit
-            }
-        }
-    }
-
-    suspend fun getCategoriesRecyclerItem(categoriesList: List<Category>): List<CategoryRecyclerViewItem> {
-        return model.getCategoriesRecyclerItem(categoriesList)
+    private fun removeTaskWithNullCategory(taskList: List<Task>): List<Task> {
+        Log.d("Teste", "entrou")
+        return taskList.filter { it.category != null }
     }
 }

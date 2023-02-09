@@ -3,12 +3,10 @@ package com.example.todolistkotlin.data.repository
 import com.example.todolistkotlin.di.CategoriesRef
 import com.example.todolistkotlin.domain.model.Category
 import com.example.todolistkotlin.common.Response
-import com.example.todolistkotlin.domain.repository.AddCategoryResponse
-import com.example.todolistkotlin.domain.repository.CategoryRepository
-import com.example.todolistkotlin.domain.repository.DeleteCategoryResponse
-import com.example.todolistkotlin.domain.repository.UpdateCategoryResponse
 import com.example.todolistkotlin.common.Constants.FIELD_NAME
+import com.example.todolistkotlin.domain.repository.*
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
@@ -39,9 +37,17 @@ class CategoryRepositoryImpl @Inject constructor(
 
     override suspend fun addCategory(category: Category): AddCategoryResponse {
         return try {
-            category.id = category.name
+            category.id = categoriesRef.document().id
             categoriesRef.document(category.id).set(category).await()
-            Response.Success(true)
+            Response.Success(category)
+        } catch (e: Exception) {
+            Response.Failure(e)
+        }
+    }
+
+    override suspend fun getCategoryReferenceById(categoryId: String): GetCategoryRefById {
+        return try {
+            Response.Success(categoriesRef.document(categoryId).get().await().reference)
         } catch (e: Exception) {
             Response.Failure(e)
         }

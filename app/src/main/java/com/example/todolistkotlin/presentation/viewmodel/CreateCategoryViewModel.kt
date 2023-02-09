@@ -1,5 +1,6 @@
 package com.example.todolistkotlin.presentation.viewmodel
 
+import androidx.databinding.ObservableBoolean
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,8 +19,10 @@ class CreateCategoryViewModel @Inject constructor(
     private val categoryUseCases: CategoryUseCases
 ) : ViewModel() {
 
-    var categoryCreated: Category? = null
-    var createCategoryButtonClickable = MutableLiveData(true)
+    private val _addCategoryResponse = MutableLiveData<AddCategoryResponse>()
+    val addCategoryResponse: LiveData<AddCategoryResponse> get() = _addCategoryResponse
+
+    var createCategoryButtonClickable = ObservableBoolean(true)
 
     private val _categoryColorItem: MutableLiveData<String> = MutableLiveData()
     val categoryColorItem: LiveData<String>
@@ -34,11 +37,7 @@ class CreateCategoryViewModel @Inject constructor(
     private var colorHex: String = ""
 
     fun onCategoryEvent(event: CreateCategoryFormEvent) {
-        when(event) {
-            is CreateCategoryFormEvent.SubmitCategoryForm -> Unit
-            else -> createCategoryButtonClickable.postValue(true)
-        }
-        when(event) {
+        when (event) {
             is CreateCategoryFormEvent.NameChanged -> {
                 name = event.name
             }
@@ -51,6 +50,7 @@ class CreateCategoryViewModel @Inject constructor(
                 _categoryColorItem.postValue(event.colorHex)
             }
             is CreateCategoryFormEvent.SubmitCategoryForm -> {
+                createCategoryButtonClickable.set(false)
                 addCategory()
             }
         }
@@ -58,7 +58,6 @@ class CreateCategoryViewModel @Inject constructor(
 
     private fun addCategory() = viewModelScope.launch(Dispatchers.IO) {
         val category = Category("", name, colorHex, iconResId!!)
-        categoryCreated = category
-        categoryUseCases.addCategory(category)
+        _addCategoryResponse.postValue(categoryUseCases.addCategory(category))
     }
 }

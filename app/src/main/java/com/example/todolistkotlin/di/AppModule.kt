@@ -2,13 +2,10 @@ package com.example.todolistkotlin.di
 
 import com.example.todolistkotlin.domain.repository.CategoryRepository
 import com.example.todolistkotlin.domain.repository.TaskRepository
-import com.example.todolistkotlin.domain.use_case.category.AddCategory
-import com.example.todolistkotlin.domain.use_case.category.CategoryUseCases
-import com.example.todolistkotlin.domain.use_case.category.DeleteCategory
-import com.example.todolistkotlin.domain.use_case.category.GetCategories
 import com.example.todolistkotlin.common.Constants.CATEGORIES_COLLECTION
 import com.example.todolistkotlin.common.Constants.TASKS_COLLECTION
 import com.example.todolistkotlin.common.Constants.USERS_COLLECTION
+import com.example.todolistkotlin.domain.use_case.category.*
 import com.example.todolistkotlin.domain.use_case.task.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -76,7 +73,8 @@ object AppModule {
     ) = CategoryUseCases(
         getCategories = GetCategories(repo),
         addCategory = AddCategory(repo),
-        deleteCategory = DeleteCategory(repo)
+        deleteCategory = DeleteCategory(repo),
+        getCategoryRefById = GetCategoryReferenceById(repo)
     )
 
 }

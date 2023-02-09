@@ -1,9 +1,7 @@
 package com.example.todolistkotlin.presentation.adapter.recycler
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.example.todolistkotlin.databinding.EmptyListRecyclerItemBinding
@@ -11,9 +9,8 @@ import com.example.todolistkotlin.presentation.model.HomeRecyclerViewItem
 import com.example.todolistkotlin.enuns.EnumHomeRecyclerViewType
 import com.example.todolistkotlin.databinding.LargeTaskItemBinding
 import com.example.todolistkotlin.databinding.TaskDateItemBinding
-import com.example.todolistkotlin.presentation.model.TaskWithCategory
+import com.example.todolistkotlin.domain.model.Task
 import com.example.todolistkotlin.presentation.viewholder.HomeRecyclerViewHolder
-import com.google.android.material.card.MaterialCardView
 
 class HomeRecyclerAdapter(private val listener: TaskAdapterListener) :
     ListAdapter<HomeRecyclerViewItem, HomeRecyclerViewHolder>(DIFFUTILS) {
@@ -58,9 +55,9 @@ class HomeRecyclerAdapter(private val listener: TaskAdapterListener) :
                 return when {
                     oldItem is HomeRecyclerViewItem.TaskItem && newItem is HomeRecyclerViewItem.TaskItem -> {
                         return when {
-                            oldItem.item.task.id != newItem.item.task.id -> false
-                            oldItem.item.task.title != newItem.item.task.title -> false
-                            oldItem.item.task.completed != newItem.item.task.completed -> false
+                            oldItem.task.id != newItem.task.id -> false
+                            oldItem.task.title != newItem.task.title -> false
+                            oldItem.task.completed != newItem.task.completed -> false
                             else -> true
                         }
                     }
@@ -81,9 +78,9 @@ class HomeRecyclerAdapter(private val listener: TaskAdapterListener) :
                 return when {
                     oldItem is HomeRecyclerViewItem.TaskItem && newItem is HomeRecyclerViewItem.TaskItem -> {
                         return when {
-                            oldItem.item.task.id != newItem.item.task.id -> false
-                            oldItem.item.task.title != newItem.item.task.title -> false
-                            oldItem.item.task.completed != newItem.item.task.completed -> false
+                            oldItem.task.id != newItem.task.id -> false
+                            oldItem.task.title != newItem.task.title -> false
+                            oldItem.task.completed != newItem.task.completed -> false
                             else -> true
                         }
                     }
@@ -100,7 +97,7 @@ class HomeRecyclerAdapter(private val listener: TaskAdapterListener) :
     }
 
     interface TaskAdapterListener {
-        fun onTaskClicked(taskWithCategory: TaskWithCategory)
+        fun onTaskClicked(task: Task)
     }
 
 }

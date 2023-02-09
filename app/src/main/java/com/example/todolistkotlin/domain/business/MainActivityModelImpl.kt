@@ -5,9 +5,8 @@ import com.example.todolistkotlin.domain.model.Category
 import com.example.todolistkotlin.presentation.model.HomeRecyclerViewItem
 import com.example.todolistkotlin.domain.model.Task
 import com.example.todolistkotlin.domain.utils.TaskFilter
-import com.example.todolistkotlin.presentation.UiText
+import com.example.todolistkotlin.presentation.utils.UiText
 import com.example.todolistkotlin.presentation.model.CategoryRecyclerViewItem
-import com.example.todolistkotlin.presentation.model.TaskWithCategory
 import com.example.todolistkotlin.util.DateUtils
 import com.example.todolistkotlin.util.DateUtils.Companion.getTimeInMillisResetedTime
 import com.example.todolistkotlin.util.DateUtils.Companion.isTimeInMillsSameDay
@@ -35,13 +34,11 @@ class MainActivityModelImpl @Inject constructor() : MainActivityModel {
 
     //------------------TASKS------------------------------
 
-    private fun joinTaskAndCategory(
+    private fun addTaskItem(
         task: Task,
-        category: Category?,
-        recyclerList: MutableList<HomeRecyclerViewItem>
-    ) {
-        if (category != null) {
-            recyclerList.add(newTaskItem(task, category))
+        recyclerList: MutableList<HomeRecyclerViewItem>) {
+        if (task.category != null) {
+            recyclerList.add(HomeRecyclerViewItem.TaskItem(task))
         } else {
             val item = recyclerList.lastOrNull()
             if (item != null && item is HomeRecyclerViewItem.TaskDateItem) {
@@ -52,12 +49,11 @@ class MainActivityModelImpl @Inject constructor() : MainActivityModel {
 
     override suspend fun getRecyclerViewMainList(
         taskList: List<Task>,
-        categoriesList: List<Category>,
         filter: TaskFilter
     ): List<HomeRecyclerViewItem> {
         val recyclerList: MutableList<HomeRecyclerViewItem> = mutableListOf()
 
-        val filterList = when (filter) {
+        var filterList = when (filter) {
             is TaskFilter.All -> {
                 getAllTasks(taskList)
             }
@@ -71,15 +67,17 @@ class MainActivityModelImpl @Inject constructor() : MainActivityModel {
                 getCompletedTasks(taskList)
             }
         }
+        filterList = filterList.sortedBy { it.dateInMills }
+
         if (filterList.isNotEmpty()) {
             when (filter) {
                 is TaskFilter.Completed -> {
-                    recyclerList.addAll(createRestOfItems(filterList, categoriesList))
+                    recyclerList.addAll(createRestOfItems(filterList))
                 }
                 else -> {
                     val delayedTasks =
                         filterList.filter { isTaskDelayed(it.dateInMills) }.toMutableList()
-                    recyclerList.addAll(createDelayedItems(delayedTasks, categoriesList))
+                    recyclerList.addAll(createDelayedItems(delayedTasks))
 
                     val todayTasks = filterList.filter {
                         isTimeInMillsSameDay(
@@ -87,16 +85,16 @@ class MainActivityModelImpl @Inject constructor() : MainActivityModel {
                             it.dateInMills
                         )
                     }
-                    recyclerList.addAll(createTodayItems(todayTasks, categoriesList))
+                    recyclerList.addAll(createTodayItems(todayTasks))
 
                     val tomorrowTasks = filterList.filter { isTaskForTomorrow(it.dateInMills) }
-                    recyclerList.addAll(createTomorrowItems(tomorrowTasks, categoriesList))
+                    recyclerList.addAll(createTomorrowItems(tomorrowTasks))
 
                     val restOfTasks = filterList.toMutableList()
                     restOfTasks.removeAll(delayedTasks)
                     restOfTasks.removeAll(todayTasks)
                     restOfTasks.removeAll(tomorrowTasks)
-                    recyclerList.addAll(createRestOfItems(restOfTasks, categoriesList))
+                    recyclerList.addAll(createRestOfItems(restOfTasks))
                 }
             }
         }
@@ -107,53 +105,46 @@ class MainActivityModelImpl @Inject constructor() : MainActivityModel {
     }
 
     private fun createDelayedItems(
-        taskList: List<Task>,
-        categoriesList: List<Category>
+        taskList: List<Task>
     ): List<HomeRecyclerViewItem> {
         val recyclerList = ArrayList<HomeRecyclerViewItem>()
         if (taskList.isNotEmpty()) {
             recyclerList.add(HomeRecyclerViewItem.TaskDateItem(delayedTaskMessage))
             taskList.forEach { task ->
-                val category = findCategoryWithId(task.categoryId, categoriesList)
-                joinTaskAndCategory(task, category, recyclerList)
+                addTaskItem(task, recyclerList)
             }
         }
         return recyclerList
     }
 
     private fun createTodayItems(
-        taskList: List<Task>,
-        categoriesList: List<Category>
+        taskList: List<Task>
     ): List<HomeRecyclerViewItem> {
         val recyclerList = ArrayList<HomeRecyclerViewItem>()
         if (taskList.isNotEmpty()) {
             recyclerList.add(HomeRecyclerViewItem.TaskDateItem(todayTaskMessage))
             taskList.forEach { task ->
-                val category = findCategoryWithId(task.categoryId, categoriesList)
-                joinTaskAndCategory(task, category, recyclerList)
+                addTaskItem(task, recyclerList)
             }
         }
         return recyclerList
     }
 
     private fun createTomorrowItems(
-        taskList: List<Task>,
-        categoriesList: List<Category>
+        taskList: List<Task>
     ): List<HomeRecyclerViewItem> {
         val recyclerList = ArrayList<HomeRecyclerViewItem>()
         if (taskList.isNotEmpty()) {
             recyclerList.add(HomeRecyclerViewItem.TaskDateItem(tomorrowTaskMessage))
             taskList.forEach { task ->
-                val category = findCategoryWithId(task.categoryId, categoriesList)
-                joinTaskAndCategory(task, category, recyclerList)
+                addTaskItem(task, recyclerList)
             }
         }
         return recyclerList
     }
 
     private fun createRestOfItems(
-        taskList: List<Task>,
-        categoriesList: List<Category>
+        taskList: List<Task>
     ): List<HomeRecyclerViewItem> {
         val actualYear = DateUtils.longIntoYear(Calendar.getInstance().timeInMillis)
         val recyclerList = ArrayList<HomeRecyclerViewItem>()
@@ -174,8 +165,7 @@ class MainActivityModelImpl @Inject constructor() : MainActivityModel {
                     }
                     currentDate = currentTaskDate
                 }
-                val category = findCategoryWithId(task.categoryId, categoriesList)
-                joinTaskAndCategory(task, category, recyclerList)
+                addTaskItem(task, recyclerList)
             }
         }
         return recyclerList
@@ -207,10 +197,6 @@ class MainActivityModelImpl @Inject constructor() : MainActivityModel {
         }
     }
 
-    private fun findCategoryWithId(id: String, categoriesList: List<Category>): Category? {
-        return categoriesList.find { it.id == id }
-    }
-
     private fun isTaskForTomorrow(dateInMills: Long): Boolean {
         val tomorrowDate = Calendar.getInstance()
         tomorrowDate.add(Calendar.DAY_OF_MONTH, 1)
@@ -221,14 +207,13 @@ class MainActivityModelImpl @Inject constructor() : MainActivityModel {
 
     override suspend fun getRecyclerViewCalendarList(
         baseDate: Long,
-        taskList: List<Task>,
-        categoriesList: List<Category>
+        taskList: List<Task>
     ): List<HomeRecyclerViewItem> {
         val recyclerList: MutableList<HomeRecyclerViewItem> = mutableListOf()
         val tasksFilter = taskList.filter {
             DateUtils.longIntoDate(baseDate) == DateUtils.longIntoDate(it.dateInMills) && !it.completed
         }
-        recyclerList.addAll(createRestOfItems(tasksFilter, categoriesList))
+        recyclerList.addAll(createRestOfItems(tasksFilter))
         if (recyclerList.isEmpty()) {
             recyclerList.add(HomeRecyclerViewItem.Empty(emptyMessageTask))
         }
@@ -242,10 +227,6 @@ class MainActivityModelImpl @Inject constructor() : MainActivityModel {
         getTimeInMillisResetedTime(taskDate)
         getTimeInMillisResetedTime(currentDate)
         return taskDate.before(currentDate)
-    }
-
-    private fun newTaskItem(task: Task, category: Category): HomeRecyclerViewItem.TaskItem {
-        return HomeRecyclerViewItem.TaskItem(TaskWithCategory(task, category))
     }
 
     private fun newDateItemWithoutYear(date: Long): HomeRecyclerViewItem.TaskDateItem {

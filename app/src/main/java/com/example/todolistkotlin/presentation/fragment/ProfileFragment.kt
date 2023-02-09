@@ -4,21 +4,23 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.todolistkotlin.R
 import com.example.todolistkotlin.common.Constants.NIGHT_KEY
 import com.example.todolistkotlin.databinding.FragmentProfileBinding
 import com.example.todolistkotlin.domain.model.Task
-import com.example.todolistkotlin.presentation.states.MainViewState
+import com.example.todolistkotlin.presentation.states.HomeViewState
 import com.example.todolistkotlin.presentation.states.UserInfoState
-import com.example.todolistkotlin.presentation.viewmodel.MainViewModel
+import com.example.todolistkotlin.presentation.viewmodel.HomeViewModel
 import com.example.todolistkotlin.util.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.ktx.auth
@@ -29,7 +31,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class ProfileFragment : Fragment() {
 
     private lateinit var _binding: FragmentProfileBinding
-    private val viewModel: MainViewModel by lazy { ViewModelProvider(requireActivity())[MainViewModel::class.java] }
+    private val viewModel: HomeViewModel by lazy { ViewModelProvider(requireActivity())[HomeViewModel::class.java] }
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
     private val networkChecker: NetworkChecker by lazy {
@@ -104,7 +106,7 @@ class ProfileFragment : Fragment() {
         return sharedPreferences.getBoolean(NIGHT_KEY, false)
     }
 
-    private fun handleHomeState(state: MainViewState) {
+    private fun handleHomeState(state: HomeViewState) {
         if(networkChecker.hasInternet()) {
             populateStatistics(state.taskList)
             _binding.txtWithoutConnection.toInvisible()
@@ -151,7 +153,7 @@ class ProfileFragment : Fragment() {
             _binding.txtEmail.text = it
         }
         state.imageUrl?.let {
-            _binding.imgProfile.loadImage(it.toString())
+            _binding.imgProfile.loadImage(it)
         }
     }
 }

@@ -1,8 +1,8 @@
 package com.example.todolistkotlin.domain.utils
 
 sealed class TaskFilter {
-    object All : TaskFilter()
-    object Today : TaskFilter()
-    object Upcoming : TaskFilter()
-    object Completed : TaskFilter()
+    class All : TaskFilter()
+    class Today : TaskFilter()
+    class Upcoming : TaskFilter()
+    class Completed : TaskFilter()
 }

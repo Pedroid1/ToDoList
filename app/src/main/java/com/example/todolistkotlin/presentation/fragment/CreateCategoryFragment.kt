@@ -13,17 +13,18 @@ import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.example.todolistkotlin.R
-import com.example.todolistkotlin.presentation.model.ColorItem
 import com.example.todolistkotlin.common.Response
+import com.example.todolistkotlin.common.navigateBack
+import com.example.todolistkotlin.presentation.model.ColorItem
 import com.example.todolistkotlin.databinding.FragmentCreateCategoryBinding
 import com.example.todolistkotlin.domain.model.Category
-import com.example.todolistkotlin.domain.repository.AddCategoryResponse
 import com.example.todolistkotlin.presentation.adapter.recycler.ColorItemAdapter
 import com.example.todolistkotlin.presentation.adapter.recycler.IconItemAdapter
 import com.example.todolistkotlin.presentation.ui_events.CreateCategoryFormEvent
+import com.example.todolistkotlin.presentation.viewmodel.CategoryViewModel
 import com.example.todolistkotlin.presentation.viewmodel.CreateCategoryViewModel
 import com.example.todolistkotlin.presentation.viewmodel.EmptyViewModel
-import com.example.todolistkotlin.presentation.viewmodel.MainViewModel
+import com.example.todolistkotlin.presentation.viewmodel.HomeViewModel
 import com.example.todolistkotlin.util.Utils
 import com.example.todolistkotlin.util.hideKeyboard
 import com.example.todolistkotlin.util.observe
@@ -44,8 +45,8 @@ class CreateCategoryFragment : Fragment(), ColorItemAdapter.onColorSelected,
     }
 
     private lateinit var _binding: FragmentCreateCategoryBinding
-    private lateinit var viewModel: CreateCategoryViewModel
-    private val mainViewModel: MainViewModel by lazy { ViewModelProvider(requireActivity())[MainViewModel::class.java] }
+    private val viewModel: CreateCategoryViewModel by lazy { getCreateCategoryViewModel() }
+    private val categoryViewModel: CategoryViewModel by lazy { ViewModelProvider(requireActivity())[CategoryViewModel::class.java] }
     private val args: CreateCategoryFragmentArgs by navArgs()
 
     override fun onCreateView(
@@ -89,32 +90,37 @@ class CreateCategoryFragment : Fragment(), ColorItemAdapter.onColorSelected,
         _binding.viewCategoryItem.imgCategory.setImageResource(icon)
     }
 
-    private fun setupCreateButtonClickable(clickable: Boolean) {
-        _binding.createBtn.isClickable = clickable
-    }
 
     private fun observer() {
         viewLifecycleOwner.apply {
             observe(viewModel.categoryColorItem, ::setupBackgroundPreview)
             observe(viewModel.categoryIconItem, ::setupIconPreview)
-            observe(viewModel.createCategoryButtonClickable, ::setupCreateButtonClickable)
+            observe(viewModel.addCategoryResponse, ::handleAddCategoryResponse)
         }
     }
 
-    private fun navigateToLastScreen() {
-        if (args.rootActivity == CREATE_TASK_ROOT_SCREEN) {
-            setFragmentResult(
-                CATEGORY_REQUEST_KEY,
-                bundleOf(Pair(CATEGORY_RESULT, viewModel.categoryCreated))
-            )
+    private fun handleAddCategoryResponse(response: Response<Category>) {
+        when(response) {
+            is Response.Success -> {
+                if (args.rootActivity == CREATE_TASK_ROOT_SCREEN) {
+                    setFragmentResult(
+                        CATEGORY_REQUEST_KEY,
+                        bundleOf(Pair(CATEGORY_RESULT, response.data))
+                    )
+                }
+                requireActivity().navigateBack()
+            }
+            is Response.Failure -> {
+                _binding.root.showSnackBar(getString(R.string.error_creating_category), Snackbar.LENGTH_SHORT)
+                viewModel.createCategoryButtonClickable.set(true)
+            }
         }
-        requireActivity().onBackPressedDispatcher.onBackPressed()
     }
 
     private fun prepareViewListener() {
         _binding.apply {
             header.setLeftIconListener {
-                navigateToLastScreen()
+                requireActivity().navigateBack()
             }
 
             createBtn.setOnClickListener {
@@ -122,10 +128,8 @@ class CreateCategoryFragment : Fragment(), ColorItemAdapter.onColorSelected,
                 val categoryName = _binding.categoryEdt.text.toString().trim()
 
                 if (categoryName.isNotEmpty()) {
-                    if (!verifyIfExistsCategory(categoryName, mainViewModel.categoriesList)) {
-                        viewModel.createCategoryButtonClickable.postValue(false)
+                    if (!verifyIfExistsCategory(categoryName, categoryViewModel.categoriesList)) {
                         viewModel.onCategoryEvent(CreateCategoryFormEvent.SubmitCategoryForm)
-                        navigateToLastScreen()
                     } else {
                         _binding.categoryInput.error = getString(R.string.category_already_exists)
                     }
@@ -144,11 +148,16 @@ class CreateCategoryFragment : Fragment(), ColorItemAdapter.onColorSelected,
     }
 
     private fun initialWork() {
-        viewModel = getCreateCategoryViewModel()
+        _binding.viewModelXml = this.viewModel
+        _binding.lifecycleOwner = viewLifecycleOwner
 
         _binding.categoryEdt.inputType =
             InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
 
+        createAdapters()
+    }
+
+    private fun createAdapters() {
         val colorItemAdapter =
             ColorItemAdapter(Utils.getCategoryColorsList(requireContext()))
         colorItemAdapter.setOnItemSelectedListener(this)

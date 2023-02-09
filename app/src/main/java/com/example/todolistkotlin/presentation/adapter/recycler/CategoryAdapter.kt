@@ -52,7 +52,7 @@ class CategoryAdapter(private val taskList: List<Task>) :
     }
 
     private fun numberOfTasks(category: Category): Int {
-        return taskList.count { it.categoryId == category.id && !it.completed }
+        return taskList.count { it.category?.id == category.id && !it.completed }
     }
 
     sealed class CategoryViewHolder(val binding: ViewBinding) :

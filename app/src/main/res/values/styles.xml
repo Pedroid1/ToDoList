@@ -21,14 +21,6 @@
         <item name="android:paddingEnd">13dp</item>
     </style>
 
-    <!-- Bottom Navigation -->
-    <style name="theme_bottom_navigation" parent="Theme.ToDoListKotlin"/>
-
-    <style name="bottom_navigation" parent="Widget.MaterialComponents.BottomNavigationView">
-        <item name="backgroundTint">@color/transparency</item>
-        <item name="theme">@style/theme_bottom_navigation</item>
-    </style>
-
     <style name="cardview_without_border" parent="Widget.Material3.CardView.Elevated">
         <item name="cardElevation">4dp</item>
         <item name="cardCornerRadius">5dp</item>
@@ -42,14 +34,6 @@
 
     <style name="cardview_theme" parent="Theme.ToDoListKotlin" >
         <item name="colorOutline">@color/transparency</item>
-    </style>
-
-    <style name="floating_action_button" parent="Widget.MaterialComponents.FloatingActionButton" >
-      <item name="theme">@style/floating_action_button_theme</item>
-    </style>
-
-    <style name="floating_action_button_theme" parent="Theme.ToDoListKotlin" >
-            <item name="colorSecondary">?attr/colorPrimary</item>
     </style>
 
 </resources>

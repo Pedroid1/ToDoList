@@ -1,19 +1,21 @@
 package com.example.todolistkotlin.presentation.viewmodel
 
+import androidx.databinding.ObservableBoolean
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.todolistkotlin.domain.model.Category
+import com.example.todolistkotlin.common.Response
 import com.example.todolistkotlin.domain.model.Task
 import com.example.todolistkotlin.domain.repository.AddTaskResponse
+import com.example.todolistkotlin.domain.use_case.category.CategoryUseCases
 import com.example.todolistkotlin.domain.use_case.task.TaskUseCases
 import com.example.todolistkotlin.domain.use_case.validation.create_task.ValidationCreateTaskUseCases
 import com.example.todolistkotlin.enuns.EnumTaskPriority
 import com.example.todolistkotlin.presentation.ui_events.CreateTaskFormEvent
 import com.example.todolistkotlin.presentation.form_validation.CreateTaskFormValidation
-import com.example.todolistkotlin.presentation.ui_events.TaskEvent
 import com.example.todolistkotlin.util.DateUtils
+import com.google.firebase.firestore.DocumentReference
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -24,13 +26,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CreateTaskViewModel @Inject constructor(
-    private val taskUseCases: TaskUseCases
+    private val taskUseCases: TaskUseCases,
+    private val categoryUseCases: CategoryUseCases
 ) : ViewModel() {
 
-    val submitTaskSuccessful = MutableLiveData<Boolean>(false)
+    private val _addTaskResult = MutableLiveData<AddTaskResponse>()
+    val addTaskResult: LiveData<AddTaskResponse> get() = _addTaskResult
 
     private var isTaskForToday: Boolean = false
-    val createButtonClickable = MutableLiveData(true)
+    val createButtonClickable = ObservableBoolean(true)
     var isDateSelected: Boolean = false
     var isTimeSelected: Boolean = false
     private val validationUseCases = ValidationCreateTaskUseCases()
@@ -38,7 +42,7 @@ class CreateTaskViewModel @Inject constructor(
     private var title: String = ""
     private var description: String = ""
     private var taskDate = Calendar.getInstance()
-    private var category: Category? = null
+    private var categoryId: String? = ""
     private var priority: EnumTaskPriority? = null
 
     private val _formErrorChannel = Channel<CreateTaskFormValidation>()
@@ -58,13 +62,9 @@ class CreateTaskViewModel @Inject constructor(
 
     fun onEvent(event: CreateTaskFormEvent) {
         when (event) {
-            is CreateTaskFormEvent.SubmitTask -> Unit
-            else -> createButtonClickable.postValue(true)
-        }
-        when (event) {
             is CreateTaskFormEvent.TitleChanged -> title = event.title
             is CreateTaskFormEvent.DescriptionChanged -> description = event.description
-            is CreateTaskFormEvent.CategoryChanged -> category = event.categoryChanged
+            is CreateTaskFormEvent.CategoryChanged -> categoryId = event.categoryId
             is CreateTaskFormEvent.DateChanged -> {
                 setSelectedDate(
                     event.day,
@@ -82,13 +82,16 @@ class CreateTaskViewModel @Inject constructor(
                 priority = event.priority
                 _selectedPriority.value = event.priority
             }
-            is CreateTaskFormEvent.SubmitTask -> submitTask()
+            is CreateTaskFormEvent.SubmitTask -> {
+                createButtonClickable.set(false)
+                submitTask()
+            }
         }
     }
 
     private fun submitTask() {
         val titleResult = validationUseCases.validateTitle(title)
-        val categoryResult = validationUseCases.validateCategory(category)
+        val categoryResult = validationUseCases.validateCategory(categoryId)
         val dateResult = validationUseCases.validateDate(isDateSelected)
         val timeResult =
             validationUseCases.validateTime(taskDate.timeInMillis, isTimeSelected, isTaskForToday)
@@ -109,21 +112,21 @@ class CreateTaskViewModel @Inject constructor(
             priorityResult
         ).any { !it.successful }
         if (!hasError) {
-            val task = Task(
-                "",
-                title,
-                description,
-                category!!.name,
-                priority!!,
-                taskDate.timeInMillis
-            )
-            addTask(task)
-            submitTaskSuccessful.postValue(true)
-        } else createButtonClickable.postValue(true)
+            viewModelScope.launch(Dispatchers.IO) {
+                when (val categoryRef = categoryUseCases.getCategoryRefById(categoryId!!)) {
+                    is Response.Success -> {
+                        addTask(title, description, categoryRef.data, priority!!, taskDate.timeInMillis)
+                    }
+                    is Response.Failure -> {
+                        _addTaskResult.postValue(Response.Failure(categoryRef.e))
+                    }
+                }
+            }
+        } else createButtonClickable.set(true)
     }
 
-    private fun addTask(task: Task) = viewModelScope.launch(Dispatchers.IO) {
-        taskUseCases.addTask(task)
+    private fun addTask(title: String, description: String, categoryRef: DocumentReference, priority: EnumTaskPriority, taskDate: Long) = viewModelScope.launch(Dispatchers.IO) {
+        _addTaskResult.postValue(taskUseCases.addTask(title, description, categoryRef, priority, taskDate))
     }
 
     private fun setSelectedDate(day: Int, month: Int, year: Int) {

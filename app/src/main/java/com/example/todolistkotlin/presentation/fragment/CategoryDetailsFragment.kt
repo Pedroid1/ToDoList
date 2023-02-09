@@ -13,17 +13,15 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.example.todolistkotlin.R
-import com.example.todolistkotlin.common.Response
 import com.example.todolistkotlin.databinding.FragmentCategoryDetailsBinding
-import com.example.todolistkotlin.domain.model.Category
 import com.example.todolistkotlin.domain.model.Task
 import com.example.todolistkotlin.domain.utils.TaskFilter
 import com.example.todolistkotlin.presentation.adapter.SwipeTouchHelper
 import com.example.todolistkotlin.presentation.adapter.recycler.HomeRecyclerAdapter
-import com.example.todolistkotlin.presentation.model.TaskWithCategory
-import com.example.todolistkotlin.presentation.states.MainViewState
+import com.example.todolistkotlin.presentation.states.HomeViewState
 import com.example.todolistkotlin.presentation.ui_events.TaskEvent
-import com.example.todolistkotlin.presentation.viewmodel.MainViewModel
+import com.example.todolistkotlin.presentation.viewmodel.CategoryViewModel
+import com.example.todolistkotlin.presentation.viewmodel.HomeViewModel
 import com.example.todolistkotlin.util.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -37,7 +35,8 @@ class CategoryDetailsFragment : Fragment(), SwipeTouchHelper.OnTaskEvent,
     HomeRecyclerAdapter.TaskAdapterListener {
 
     private lateinit var _binding: FragmentCategoryDetailsBinding
-    private val mainViewModel: MainViewModel by lazy { ViewModelProvider(requireActivity())[MainViewModel::class.java] }
+    private val homeViewModel: HomeViewModel by lazy { ViewModelProvider(requireActivity())[HomeViewModel::class.java] }
+    private val categoryViewModel: CategoryViewModel by lazy { ViewModelProvider(requireActivity())[CategoryViewModel::class.java] }
     private val args: CategoryDetailsFragmentArgs by navArgs()
 
     private val adapter = HomeRecyclerAdapter(this)
@@ -59,25 +58,25 @@ class CategoryDetailsFragment : Fragment(), SwipeTouchHelper.OnTaskEvent,
     }
 
     private fun undoDeleteTask(task: Any) {
-        mainViewModel.onTaskEvent(TaskEvent.RestoreDelete(task as Task))
+        homeViewModel.onTaskEvent(TaskEvent.RestoreDelete(task as Task))
     }
 
     private fun deleteTask(task: Any) {
-        mainViewModel.deleteTask((task as Task).id)
+        homeViewModel.deleteTask((task as Task).id)
     }
 
     private fun completeTask(task: Any) {
-        mainViewModel.completeTask(task as Task)
+        homeViewModel.completeTask(task as Task)
     }
 
     private fun undoCompletedTask(task: Any) {
-        mainViewModel.onTaskEvent(TaskEvent.RestoreComplete(task as Task))
+        homeViewModel.onTaskEvent(TaskEvent.RestoreComplete(task as Task))
     }
 
-    private fun handleMainViewState(state: MainViewState) {
-        _binding.loadingLayout.root.setupLoadingView(!state.isComplete)
-        if (state.taskList != null && state.categoryList != null) {
-            prepareRecyclerView(state.taskList, state.categoryList)
+    private fun handleMainViewState(state: HomeViewState) {
+        _binding.loadingLayout.root.setupLoadingView(!state.isFetchCompleted)
+        if (state.taskList != null) {
+            prepareRecyclerView(state.taskList)
         }
         state.error?.let {
             //TODO - Handle error
@@ -86,12 +85,12 @@ class CategoryDetailsFragment : Fragment(), SwipeTouchHelper.OnTaskEvent,
 
     private fun observer() {
         viewLifecycleOwner.apply {
-            observe(mainViewModel.homeViewState, ::handleMainViewState)
+            observe(homeViewModel.homeViewState, ::handleMainViewState)
         }
 
         lifecycleScope.launchWhenStarted {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                mainViewModel.errorEvent.collectLatest {
+                homeViewModel.errorEvent.collectLatest {
                     _binding.root.showSnackBar(
                         it.uiText.asString(requireContext()),
                         Snackbar.LENGTH_LONG
@@ -102,7 +101,7 @@ class CategoryDetailsFragment : Fragment(), SwipeTouchHelper.OnTaskEvent,
 
         lifecycleScope.launchWhenStarted {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                mainViewModel.taskEvent.collectLatest { event ->
+                homeViewModel.taskEvent.collectLatest { event ->
                     when (event) {
                         is TaskEvent.Complete -> {
                             _binding.root.showSnackBarWithAction(
@@ -133,12 +132,12 @@ class CategoryDetailsFragment : Fragment(), SwipeTouchHelper.OnTaskEvent,
         }
     }
 
-    private fun prepareRecyclerView(taskList: List<Task>, categoryList: List<Category>) {
+    private fun prepareRecyclerView(taskList: List<Task>) {
         _binding.rvTasks.adapter = adapter
         lifecycleScope.launch(Dispatchers.Default) {
-            val taskListFilter = taskList.filter { it.categoryId == args.categoryId }
+            val taskListFilter = taskList.filter { it.category?.id == args.categoryId }
             val recyclerList =
-                mainViewModel.getRecyclerViewMainList(taskListFilter, categoryList, TaskFilter.All)
+                homeViewModel.getRecyclerViewMainList(taskListFilter, TaskFilter.All())
             lifecycleScope.launch(Dispatchers.Main) {
                 adapter.submitList(recyclerList)
             }
@@ -164,7 +163,7 @@ class CategoryDetailsFragment : Fragment(), SwipeTouchHelper.OnTaskEvent,
             .setTitle(getString(R.string.delete_category))
             .setMessage(R.string.delete_category_info)
             .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                mainViewModel.deleteCategory(args.categoryId)
+                categoryViewModel.deleteCategory(args.categoryId)
                 backToCategoryFragment()
             }
             .setNegativeButton(getString(R.string.no)) { _, _ -> }
@@ -187,12 +186,12 @@ class CategoryDetailsFragment : Fragment(), SwipeTouchHelper.OnTaskEvent,
     }
 
     override fun onTaskEvent(taskEvent: TaskEvent) {
-        mainViewModel.onTaskEvent(taskEvent)
+        homeViewModel.onTaskEvent(taskEvent)
     }
 
-    override fun onTaskClicked(taskWithCategory: TaskWithCategory) {
+    override fun onTaskClicked(task: Task) {
         val directions =
-            CategoryDetailsFragmentDirections.actionCategoryDetailsFragmentToTaskDetailFragment(taskWithCategory)
+            CategoryDetailsFragmentDirections.actionCategoryDetailsFragmentToTaskDetailFragment(task)
         findNavController().navigate(directions)
     }
 }

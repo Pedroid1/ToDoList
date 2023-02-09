@@ -17,13 +17,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.todolistkotlin.R
-import com.example.todolistkotlin.domain.model.Category
 import com.example.todolistkotlin.common.Response
+import com.example.todolistkotlin.common.navigateBack
+import com.example.todolistkotlin.domain.model.Category
 import com.example.todolistkotlin.enuns.EnumTaskPriority
 import com.example.todolistkotlin.databinding.FragmentCreateTaskBinding
 import com.example.todolistkotlin.presentation.ui_events.CreateTaskFormEvent
 import com.example.todolistkotlin.presentation.form_validation.CreateTaskFormValidation
-import com.example.todolistkotlin.presentation.states.MainViewState
+import com.example.todolistkotlin.presentation.states.CategoryViewState
+import com.example.todolistkotlin.presentation.states.HomeViewState
 import com.example.todolistkotlin.presentation.viewmodel.*
 import com.example.todolistkotlin.util.hideKeyboard
 import com.example.todolistkotlin.util.observe
@@ -45,7 +47,8 @@ class CreateTaskFragment : Fragment() {
     private lateinit var arrayAdapter: ArrayAdapter<String>
     private lateinit var _binding: FragmentCreateTaskBinding
     private val viewModel: CreateTaskViewModel by lazy { getCreateTaskViewModel() }
-    private val mainViewModel: MainViewModel by lazy { ViewModelProvider(requireActivity())[MainViewModel::class.java] }
+    private val homeViewModel: HomeViewModel by lazy { ViewModelProvider(requireActivity())[HomeViewModel::class.java] }
+    private val categoryViewModel: CategoryViewModel by lazy { ViewModelProvider(requireActivity())[CategoryViewModel::class.java] }
 
     private lateinit var mediumFill: Drawable
     private lateinit var lowFill: Drawable
@@ -71,6 +74,9 @@ class CreateTaskFragment : Fragment() {
     }
 
     private fun initialWork() {
+        _binding.viewModelXml = this.viewModel
+        _binding.lifecycleOwner = viewLifecycleOwner
+
         setupEdtInputType()
         loadDrawables()
         setupFragmentResultListener()
@@ -90,7 +96,7 @@ class CreateTaskFragment : Fragment() {
 
                 categoryCreated?.let {
                     _binding.filledExposed.setText(it.name)
-                    viewModel.onEvent(CreateTaskFormEvent.CategoryChanged(it))
+                    viewModel.onEvent(CreateTaskFormEvent.CategoryChanged(it.id))
                 }
             }
         }
@@ -112,7 +118,7 @@ class CreateTaskFragment : Fragment() {
     private fun prepareViewListener() {
         _binding.apply {
             header.setLeftIconListener {
-                backToHomeFragment()
+                requireActivity().navigateBack()
             }
 
             taskDateEdt.setOnClickListener {
@@ -133,7 +139,6 @@ class CreateTaskFragment : Fragment() {
             createBtn.setOnClickListener {
                 it.hideKeyboard()
                 viewModel.onEvent(CreateTaskFormEvent.SubmitTask)
-                viewModel.createButtonClickable.postValue(false)
             }
 
             filledExposed.setOnItemClickListener { parent, _, position, _ ->
@@ -148,15 +153,15 @@ class CreateTaskFragment : Fragment() {
                         findNavController().navigate(action)
                     }
                     else -> {
-                        viewModel.onEvent(
-                            CreateTaskFormEvent.CategoryChanged(
-                                getCategoryByName(
-                                    parent.getItemAtPosition(position).toString(),
-                                    mainViewModel.categoriesList
-                                )
-                            )
+                        val category = getCategoryByName(
+                            parent.getItemAtPosition(position).toString(),
+                            categoryViewModel.categoriesList
                         )
-
+                        category?.let {
+                            viewModel.onEvent(
+                                CreateTaskFormEvent.CategoryChanged(it.id)
+                            )
+                        }
                     }
                 }
             }
@@ -319,24 +324,20 @@ class CreateTaskFragment : Fragment() {
         }
     }
 
-    private fun handleHomeViewState(state: MainViewState) {
+    private fun handleCategoryViewState(state: CategoryViewState) {
         if (state.categoryList != null) {
             loadFilledExposedAdapter(state.categoryList)
         }
         state.error?.let {
-            //TODO - Handle error
+            _binding.root.showSnackBar(getString(R.string.error_fetching_categories), Snackbar.LENGTH_LONG)
         }
-    }
-
-    private fun setupCreateButtonClickable(clickable: Boolean) {
-        _binding.createBtn.isClickable = clickable
     }
 
     private fun observer() {
         viewLifecycleOwner.apply {
-            observe(mainViewModel.homeViewState, ::handleHomeViewState)
+            observe(categoryViewModel.categoryViewState, ::handleCategoryViewState)
             observe(viewModel.selectedPriority, ::setupPriorityButtons)
-            observe(viewModel.createButtonClickable, ::setupCreateButtonClickable)
+            observe(viewModel.addTaskResult, ::handleAddTaskResult)
         }
 
         lifecycleScope.launchWhenStarted {
@@ -377,10 +378,6 @@ class CreateTaskFragment : Fragment() {
         }
 
         viewModel.apply {
-            submitTaskSuccessful.observe(viewLifecycleOwner) { successful ->
-                if(successful) backToHomeFragment()
-            }
-
             selectedDateLiveData.observe(viewLifecycleOwner) {
                 _binding.taskDateEdt.setText(it)
             }
@@ -390,7 +387,18 @@ class CreateTaskFragment : Fragment() {
         }
     }
 
-    private fun backToHomeFragment() {
-        requireActivity().onBackPressedDispatcher.onBackPressed()
+    private fun handleAddTaskResult(response: Response<Boolean>) {
+        when (response) {
+            is Response.Success -> {
+                requireActivity().navigateBack()
+            }
+            is Response.Failure -> {
+                _binding.root.showSnackBar(
+                    getString(R.string.error_creating_task),
+                    Snackbar.LENGTH_LONG
+                )
+                viewModel.createButtonClickable.set(true)
+            }
+        }
     }
 }

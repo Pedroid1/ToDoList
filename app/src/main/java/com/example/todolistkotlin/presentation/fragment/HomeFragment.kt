@@ -13,16 +13,14 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.example.todolistkotlin.R
 import com.example.todolistkotlin.databinding.FragmentHomeBinding
-import com.example.todolistkotlin.domain.model.Category
 import com.example.todolistkotlin.domain.model.Task
 import com.example.todolistkotlin.domain.utils.TaskFilter
 import com.example.todolistkotlin.presentation.adapter.SwipeTouchHelper
 import com.example.todolistkotlin.presentation.adapter.recycler.HomeRecyclerAdapter
-import com.example.todolistkotlin.presentation.model.TaskWithCategory
-import com.example.todolistkotlin.presentation.states.MainViewState
+import com.example.todolistkotlin.presentation.states.HomeViewState
 import com.example.todolistkotlin.presentation.states.UserInfoState
 import com.example.todolistkotlin.presentation.ui_events.TaskEvent
-import com.example.todolistkotlin.presentation.viewmodel.MainViewModel
+import com.example.todolistkotlin.presentation.viewmodel.HomeViewModel
 import com.example.todolistkotlin.util.*
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,7 +33,7 @@ class HomeFragment : Fragment(), SwipeTouchHelper.OnTaskEvent,
     HomeRecyclerAdapter.TaskAdapterListener {
 
     private lateinit var _binding: FragmentHomeBinding
-    private val viewModel: MainViewModel by lazy { ViewModelProvider(requireActivity())[MainViewModel::class.java] }
+    private val viewModel: HomeViewModel by lazy { ViewModelProvider(requireActivity())[HomeViewModel::class.java] }
     private val adapter = HomeRecyclerAdapter(this)
 
     private val swipeTouchHelper = SwipeTouchHelper(
@@ -61,21 +59,25 @@ class HomeFragment : Fragment(), SwipeTouchHelper.OnTaskEvent,
     }
 
     private fun prepareViewListener() {
-        _binding.chipAll.setOnClickListener {
-            viewModel.setTaskFilter(TaskFilter.All)
-            swipeTouchHelper.setTaskFilter(TaskFilter.All)
-        }
-        _binding.chipToday.setOnClickListener {
-            viewModel.setTaskFilter(TaskFilter.Today)
-            swipeTouchHelper.setTaskFilter(TaskFilter.Today)
-        }
-        _binding.chipUpcoming.setOnClickListener {
-            viewModel.setTaskFilter(TaskFilter.Upcoming)
-            swipeTouchHelper.setTaskFilter(TaskFilter.Upcoming)
-        }
-        _binding.chipCompleted.setOnClickListener {
-            viewModel.setTaskFilter(TaskFilter.Completed)
-            swipeTouchHelper.setTaskFilter(TaskFilter.Completed)
+        _binding.idchipGroup.setOnCheckedStateChangeListener { group, _ ->
+            when (group.checkedChipId) {
+                R.id.chip_all -> {
+                    viewModel.setTaskFilter(TaskFilter.All())
+                    swipeTouchHelper.setTaskFilter(TaskFilter.All())
+                }
+                R.id.chip_today -> {
+                    viewModel.setTaskFilter(TaskFilter.Today())
+                    swipeTouchHelper.setTaskFilter(TaskFilter.Today())
+                }
+                R.id.chip_upcoming -> {
+                    viewModel.setTaskFilter(TaskFilter.Upcoming())
+                    swipeTouchHelper.setTaskFilter(TaskFilter.Upcoming())
+                }
+                R.id.chip_completed -> {
+                    viewModel.setTaskFilter(TaskFilter.Completed())
+                    swipeTouchHelper.setTaskFilter(TaskFilter.Completed())
+                }
+            }
         }
     }
 
@@ -95,10 +97,10 @@ class HomeFragment : Fragment(), SwipeTouchHelper.OnTaskEvent,
         viewModel.onTaskEvent(TaskEvent.RestoreComplete(task as Task))
     }
 
-    private fun handleHomeViewState(state: MainViewState) {
-        _binding.loadingLayout.root.setupLoadingView(!state.isComplete)
-        if (state.taskList != null && state.categoryList != null) {
-            prepareRecyclerView(state.taskList, state.categoryList, state.taskFilter)
+    private fun handleHomeViewState(state: HomeViewState) {
+        _binding.loadingLayout.root.setupLoadingView(!state.isFetchCompleted)
+        if (state.taskList != null) {
+            prepareRecyclerView(state.taskList, state.taskFilter)
         }
         state.error?.let {
             //TODO - Handle error
@@ -127,7 +129,11 @@ class HomeFragment : Fragment(), SwipeTouchHelper.OnTaskEvent,
         lifecycleScope.launchWhenStarted {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.errorEvent.collectLatest {
-                    _binding.root.showSnackBar(it.uiText.asString(requireContext()), Snackbar.LENGTH_LONG, R.id.floating_btn)
+                    _binding.root.showSnackBar(
+                        it.uiText.asString(requireContext()),
+                        Snackbar.LENGTH_LONG,
+                        R.id.floating_btn
+                    )
                 }
             }
         }
@@ -167,11 +173,10 @@ class HomeFragment : Fragment(), SwipeTouchHelper.OnTaskEvent,
 
     private fun prepareRecyclerView(
         tasks: List<Task>,
-        categories: List<Category>,
         taskFilter: TaskFilter
     ) {
         lifecycleScope.launch(Dispatchers.Default) {
-            val recyclerList = viewModel.getRecyclerViewMainList(tasks, categories, taskFilter)
+            val recyclerList = viewModel.getRecyclerViewMainList(tasks, taskFilter)
             lifecycleScope.launch(Dispatchers.Main) { adapter.submitList(recyclerList) }
         }
     }
@@ -186,8 +191,8 @@ class HomeFragment : Fragment(), SwipeTouchHelper.OnTaskEvent,
         viewModel.onTaskEvent(taskEvent)
     }
 
-    override fun onTaskClicked(taskWithCategory: TaskWithCategory) {
-        val directions = HomeFragmentDirections.actionHomeFragmentToTaskDetailFragment(taskWithCategory)
+    override fun onTaskClicked(task: Task) {
+        val directions = HomeFragmentDirections.actionHomeFragmentToTaskDetailFragment(task)
         findNavController().navigate(directions)
     }
 }

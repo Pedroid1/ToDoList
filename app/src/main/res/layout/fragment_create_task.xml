@@ -1,295 +1,303 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/root_layout"
+    <data>
+        <variable
+            name="viewModelXml"
+            type="com.example.todolistkotlin.presentation.viewmodel.CreateTaskViewModel" />
+    </data>
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        tools:context=".ui.activity.CreateTaskActivity">
-
-        <com.example.todolistkotlin.presentation.components.CustomHeader
-            android:id="@+id/header"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:headerTitle="Criar tarefa"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:leftIcon="@drawable/ic_back_arrow"
-            app:leftIconContentDescription="@string/accessibility_back_arrow" />
-
-        <com.example.todolistkotlin.presentation.components.CustomTextView
-            android:id="@+id/task_name_txt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/layout_margin"
-            android:layout_marginTop="@dimen/margin_between_header"
-            android:text="@string/task_title"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/header"
-            app:textPriority="secondary"
-            app:textType="subtitle1" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/task_name_input"
-            style="@style/input_layout_outlined"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/layout_margin"
-            android:layout_marginTop="@dimen/margin_between_title_and_edt"
-            android:layout_marginEnd="@dimen/layout_margin"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/task_name_txt">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/task_name_edt"
-                style="@style/edit_text_custom"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/task_exemple" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.example.todolistkotlin.presentation.components.CustomTextView
-            android:id="@+id/task_description_txt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/layout_margin"
-            android:layout_marginTop="@dimen/margin_between_edt_box"
-            android:text="@string/description"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/task_name_input"
-            app:textPriority="secondary"
-            app:textType="subtitle1" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/task_description_input"
-            style="@style/input_layout_outlined"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/layout_margin"
-            android:layout_marginTop="@dimen/margin_between_title_and_edt"
-            android:layout_marginEnd="@dimen/layout_margin"
-            app:helperText="Opcional"
-            app:helperTextEnabled="true"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/task_description_txt">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/task_description_edt"
-                style="@style/edit_text_custom"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:hint="@string/task_description_example" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.example.todolistkotlin.presentation.components.CustomTextView
-            android:id="@+id/task_category_txt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/layout_margin"
-            android:layout_marginTop="@dimen/spacing_8"
-            android:text="@string/category"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/task_description_input"
-            app:textPriority="secondary"
-            app:textType="subtitle1" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/task_category_input"
-            style="@style/input_layout_outlined_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/layout_margin"
-            android:layout_marginTop="@dimen/margin_between_title_and_edt"
-            android:layout_marginEnd="@dimen/layout_margin"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/task_category_txt">
-
-            <AutoCompleteTextView
-                android:id="@+id/filled_exposed"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/select_category"
-                android:inputType="none"
-                android:textSize="13sp" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-
-        <com.example.todolistkotlin.presentation.components.CustomTextView
-            android:id="@+id/task_date_txt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/layout_margin"
-            android:layout_marginTop="@dimen/margin_between_edt_box"
-            android:text="@string/date"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/task_category_input"
-            app:textPriority="secondary"
-            app:textType="subtitle1" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/task_date_input"
-            style="@style/input_layout_outlined"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/layout_margin"
-            android:layout_marginTop="@dimen/margin_between_title_and_edt"
-            android:layout_marginEnd="@dimen/spacing_5"
-            app:layout_constraintEnd_toStartOf="@id/task_hour_input"
-            app:layout_constraintHorizontal_weight="1.3"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/task_date_txt">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/task_date_edt"
-                style="@style/edit_text_custom"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clickable="false"
-                android:cursorVisible="false"
-                android:drawableEnd="@drawable/ic_calendar"
-                android:focusable="false"
-                android:hint="00/00/0000" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.example.todolistkotlin.presentation.components.CustomTextView
-            android:id="@+id/task_hour_txt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/hour"
-            app:layout_constraintBottom_toBottomOf="@id/task_date_txt"
-            app:layout_constraintStart_toStartOf="@id/task_hour_input"
-            app:layout_constraintTop_toTopOf="@id/task_date_txt"
-            app:textPriority="secondary"
-            app:textType="subtitle1" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/task_hour_input"
-            style="@style/input_layout_outlined"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/spacing_5"
-            android:layout_marginTop="@dimen/margin_between_title_and_edt"
-            android:layout_marginEnd="@dimen/layout_margin"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_weight="1"
-            app:layout_constraintStart_toEndOf="@id/task_date_input"
-            app:layout_constraintTop_toBottomOf="@id/task_hour_txt">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/task_hour_edt"
-                style="@style/edit_text_custom"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clickable="false"
-                android:cursorVisible="false"
-                android:drawableEnd="@drawable/ic_time"
-                android:focusable="false"
-                android:hint="00:00" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.example.todolistkotlin.presentation.components.CustomTextView
-            android:id="@+id/priority_txt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/layout_margin"
-            android:layout_marginTop="@dimen/margin_between_edt_box"
-            android:text="@string/priority2"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/task_date_input"
-            app:textPriority="secondary"
-            app:textType="subtitle1" />
+        android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layout_priority"
+            android:id="@+id/root_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/layout_margin"
-            android:layout_marginTop="@dimen/spacing_10"
-            android:layout_marginEnd="@dimen/layout_margin"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/priority_txt">
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            tools:context=".ui.activity.CreateTaskActivity">
 
-            <android.widget.Button
-                android:id="@+id/low_priority_btn"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="@dimen/spacing_10"
-                android:background="@drawable/low_priority_btn_border"
-                android:fontFamily="@font/poppins_semibold"
-                android:text="@string/low"
-                android:textColor="@color/low_priority_color"
-                android:textSize="12sp"
-                app:layout_constraintEnd_toStartOf="@id/medium_priority_btn"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <android.widget.Button
-                android:id="@+id/medium_priority_btn"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="@dimen/spacing_10"
-                android:background="@drawable/medium_priority_btn_border"
-                android:fontFamily="@font/poppins_semibold"
-                android:text="@string/medium"
-                android:textColor="@color/medium_priority_color"
-                android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="@id/low_priority_btn"
-                app:layout_constraintEnd_toStartOf="@id/high_priority_btn"
-                app:layout_constraintStart_toEndOf="@id/low_priority_btn" />
-
-            <android.widget.Button
-                android:id="@+id/high_priority_btn"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:background="@drawable/high_priority_btn_border"
-                android:fontFamily="@font/poppins_semibold"
-                android:text="@string/high"
-                android:textColor="@color/high_priority_color"
-                android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="@id/medium_priority_btn"
+            <com.example.todolistkotlin.presentation.components.CustomHeader
+                android:id="@+id/header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:headerTitle="Criar tarefa"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/medium_priority_btn" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:leftIcon="@drawable/ic_back_arrow"
+                app:leftIconContentDescription="@string/accessibility_back_arrow" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/task_priority_layout_error"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="@id/layout_priority"
-            app:layout_constraintStart_toStartOf="@id/layout_priority"
-            app:layout_constraintTop_toBottomOf="@id/layout_priority">
+            <com.example.todolistkotlin.presentation.components.CustomTextView
+                android:id="@+id/task_name_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/layout_margin"
+                android:layout_marginTop="@dimen/margin_between_header"
+                android:text="@string/task_title"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/header"
+                app:textPriority="secondary"
+                app:textType="subtitle1" />
 
-            <com.google.android.material.textfield.TextInputEditText
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/task_name_input"
+                style="@style/input_layout_outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/layout_margin"
+                android:layout_marginTop="@dimen/margin_between_title_and_edt"
+                android:layout_marginEnd="@dimen/layout_margin"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/task_name_txt">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/task_name_edt"
+                    style="@style/edit_text_custom"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/task_exemple" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.example.todolistkotlin.presentation.components.CustomTextView
+                android:id="@+id/task_description_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/layout_margin"
+                android:layout_marginTop="@dimen/margin_between_edt_box"
+                android:text="@string/description"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/task_name_input"
+                app:textPriority="secondary"
+                app:textType="subtitle1" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/task_description_input"
+                style="@style/input_layout_outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/layout_margin"
+                android:layout_marginTop="@dimen/margin_between_title_and_edt"
+                android:layout_marginEnd="@dimen/layout_margin"
+                app:helperText="Opcional"
+                app:helperTextEnabled="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/task_description_txt">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/task_description_edt"
+                    style="@style/edit_text_custom"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:hint="@string/task_description_example" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.example.todolistkotlin.presentation.components.CustomTextView
+                android:id="@+id/task_category_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/layout_margin"
+                android:layout_marginTop="@dimen/spacing_8"
+                android:text="@string/category"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/task_description_input"
+                app:textPriority="secondary"
+                app:textType="subtitle1" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/task_category_input"
+                style="@style/input_layout_outlined_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/layout_margin"
+                android:layout_marginTop="@dimen/margin_between_title_and_edt"
+                android:layout_marginEnd="@dimen/layout_margin"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/task_category_txt">
+
+                <AutoCompleteTextView
+                    android:id="@+id/filled_exposed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/select_category"
+                    android:inputType="none"
+                    android:textSize="13sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.example.todolistkotlin.presentation.components.CustomTextView
+                android:id="@+id/task_date_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/layout_margin"
+                android:layout_marginTop="@dimen/margin_between_edt_box"
+                android:text="@string/date"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/task_category_input"
+                app:textPriority="secondary"
+                app:textType="subtitle1" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/task_date_input"
+                style="@style/input_layout_outlined"
                 android:layout_width="0dp"
-                android:layout_height="0dp" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/layout_margin"
+                android:layout_marginTop="@dimen/margin_between_title_and_edt"
+                android:layout_marginEnd="@dimen/spacing_5"
+                app:layout_constraintEnd_toStartOf="@id/task_hour_input"
+                app:layout_constraintHorizontal_weight="1.3"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/task_date_txt">
 
-        <com.example.todolistkotlin.presentation.components.CustomButton
-            android:id="@+id/create_btn"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/layout_margin"
-            android:layout_marginTop="@dimen/spacing_30"
-            android:layout_marginEnd="@dimen/layout_margin"
-            android:layout_marginBottom="@dimen/layout_margin"
-            android:text="@string/create"
-            app:buttonPriority="primary"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/task_priority_layout_error" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/task_date_edt"
+                    style="@style/edit_text_custom"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="false"
+                    android:cursorVisible="false"
+                    android:drawableEnd="@drawable/ic_calendar"
+                    android:focusable="false"
+                    android:hint="00/00/0000" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.example.todolistkotlin.presentation.components.CustomTextView
+                android:id="@+id/task_hour_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/hour"
+                app:layout_constraintBottom_toBottomOf="@id/task_date_txt"
+                app:layout_constraintStart_toStartOf="@id/task_hour_input"
+                app:layout_constraintTop_toTopOf="@id/task_date_txt"
+                app:textPriority="secondary"
+                app:textType="subtitle1" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/task_hour_input"
+                style="@style/input_layout_outlined"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_5"
+                android:layout_marginTop="@dimen/margin_between_title_and_edt"
+                android:layout_marginEnd="@dimen/layout_margin"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toEndOf="@id/task_date_input"
+                app:layout_constraintTop_toBottomOf="@id/task_hour_txt">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/task_hour_edt"
+                    style="@style/edit_text_custom"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="false"
+                    android:cursorVisible="false"
+                    android:drawableEnd="@drawable/ic_time"
+                    android:focusable="false"
+                    android:hint="00:00" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.example.todolistkotlin.presentation.components.CustomTextView
+                android:id="@+id/priority_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/layout_margin"
+                android:layout_marginTop="@dimen/margin_between_edt_box"
+                android:text="@string/priority2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/task_date_input"
+                app:textPriority="secondary"
+                app:textType="subtitle1" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layout_priority"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/layout_margin"
+                android:layout_marginTop="@dimen/spacing_10"
+                android:layout_marginEnd="@dimen/layout_margin"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/priority_txt">
+
+                <android.widget.Button
+                    android:id="@+id/low_priority_btn"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="@dimen/spacing_10"
+                    android:background="@drawable/low_priority_btn_border"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:text="@string/low"
+                    android:textColor="@color/low_priority_color"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toStartOf="@id/medium_priority_btn"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <android.widget.Button
+                    android:id="@+id/medium_priority_btn"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="@dimen/spacing_10"
+                    android:background="@drawable/medium_priority_btn_border"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:text="@string/medium"
+                    android:textColor="@color/medium_priority_color"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@id/low_priority_btn"
+                    app:layout_constraintEnd_toStartOf="@id/high_priority_btn"
+                    app:layout_constraintStart_toEndOf="@id/low_priority_btn" />
+
+                <android.widget.Button
+                    android:id="@+id/high_priority_btn"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/high_priority_btn_border"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:text="@string/high"
+                    android:textColor="@color/high_priority_color"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="@id/medium_priority_btn"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/medium_priority_btn" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/task_priority_layout_error"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="@id/layout_priority"
+                app:layout_constraintStart_toStartOf="@id/layout_priority"
+                app:layout_constraintTop_toBottomOf="@id/layout_priority">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="0dp"
+                    android:layout_height="0dp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.example.todolistkotlin.presentation.components.CustomButton
+                android:id="@+id/create_btn"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/layout_margin"
+                android:layout_marginTop="@dimen/spacing_30"
+                android:layout_marginEnd="@dimen/layout_margin"
+                android:layout_marginBottom="@dimen/layout_margin"
+                android:clickable="@{viewModelXml.createButtonClickable}"
+                android:text="@string/create"
+                app:buttonPriority="primary"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/task_priority_layout_error" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</layout>

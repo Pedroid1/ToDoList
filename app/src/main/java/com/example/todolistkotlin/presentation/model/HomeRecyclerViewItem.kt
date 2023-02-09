@@ -1,7 +1,8 @@
 package com.example.todolistkotlin.presentation.model
 
+import com.example.todolistkotlin.domain.model.Task
 import com.example.todolistkotlin.enuns.EnumHomeRecyclerViewType
-import com.example.todolistkotlin.presentation.UiText
+import com.example.todolistkotlin.presentation.utils.UiText
 
 sealed class HomeRecyclerViewItem(val type: EnumHomeRecyclerViewType) {
 
@@ -10,7 +11,7 @@ sealed class HomeRecyclerViewItem(val type: EnumHomeRecyclerViewType) {
     ) : HomeRecyclerViewItem(EnumHomeRecyclerViewType.DATE)
 
     class TaskItem(
-        val item: TaskWithCategory
+        val task: Task
     ) : HomeRecyclerViewItem(EnumHomeRecyclerViewType.TASK)
 
     class Empty(val uiText: UiText) : HomeRecyclerViewItem(EnumHomeRecyclerViewType.EMPTY)

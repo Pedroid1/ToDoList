@@ -31,8 +31,8 @@ sealed class HomeRecyclerViewHolder(binding: ViewBinding) : RecyclerView.ViewHol
         fun bindTask(taskItem: HomeRecyclerViewItem.TaskItem) {
             val context = _binding.root.context
             _binding.apply {
-                val currentTask = taskItem.item.task
-                item = taskItem.item
+                val currentTask = taskItem.task
+                task = taskItem.task
                 listener = clickListener
 
                 ViewCompat.setScreenReaderFocusable(taskCard, true)
@@ -51,7 +51,7 @@ sealed class HomeRecyclerViewHolder(binding: ViewBinding) : RecyclerView.ViewHol
                         flag.contentDescription = context.getString(R.string.high_priority)
                     }
                 }
-                txtCategory.setBackgroundColor(Color.parseColor(taskItem.item.category.categoryColor))
+                txtCategory.setBackgroundColor(Color.parseColor(taskItem.task.category?.categoryColor))
             }
         }
     }

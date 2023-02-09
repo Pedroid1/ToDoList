@@ -14,13 +14,13 @@ import com.example.todolistkotlin.databinding.FragmentTaskDetailBinding
 import com.example.todolistkotlin.domain.model.Task
 import com.example.todolistkotlin.enuns.EnumTaskPriority
 import com.example.todolistkotlin.presentation.ui_events.TaskEvent
-import com.example.todolistkotlin.presentation.viewmodel.MainViewModel
+import com.example.todolistkotlin.presentation.viewmodel.HomeViewModel
 import com.example.todolistkotlin.util.toGone
 
 class TaskDetailFragment : Fragment() {
 
     private lateinit var _binding: FragmentTaskDetailBinding
-    private val viewModel: MainViewModel by lazy { ViewModelProvider(requireActivity())[MainViewModel::class.java] }
+    private val viewModel: HomeViewModel by lazy { ViewModelProvider(requireActivity())[HomeViewModel::class.java] }
     private val args: TaskDetailFragmentArgs by navArgs()
 
     override fun onCreateView(
@@ -52,13 +52,13 @@ class TaskDetailFragment : Fragment() {
     private fun prepareButtonsListener() {
         _binding.apply {
             btnDeleteOpenTask.setOnClickListener {
-                deleteTask(args.taskWithCategory.task)
+                deleteTask(args.task)
             }
             btnComplete.setOnClickListener {
-                completeTask(args.taskWithCategory.task)
+                completeTask(args.task)
             }
             btnDeleteFinishedTask.setOnClickListener {
-                deleteTask(args.taskWithCategory.task)
+                deleteTask(args.task)
             }
         }
     }
@@ -75,15 +75,17 @@ class TaskDetailFragment : Fragment() {
 
     private fun initialWork() {
         args.let {
-            val task = it.taskWithCategory.task
+            val task = it.task
             _binding.task = task
             _binding.txtDescription.text = task.description.ifEmpty { "-" }
 
-            val category = it.taskWithCategory.category
-            _binding.layoutCategory.category = category
-            _binding.layoutCategory.categoryLayout.setBackgroundColor(Color.parseColor(category.categoryColor))
-            _binding.layoutCategory.imgCategory.setImageResource(category.categoryIcon)
-            _binding.layoutCategory.totalTaskTxt.toGone()
+            val category = it.task.category
+            category?.let {
+                _binding.layoutCategory.category = category
+                _binding.layoutCategory.categoryLayout.setBackgroundColor(Color.parseColor(category.categoryColor))
+                _binding.layoutCategory.imgCategory.setImageResource(category.categoryIcon)
+                _binding.layoutCategory.totalTaskTxt.toGone()
+            }
 
             when (task.priority) {
                 EnumTaskPriority.LOW -> {

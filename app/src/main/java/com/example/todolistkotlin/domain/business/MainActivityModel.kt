@@ -14,13 +14,11 @@ interface MainActivityModel {
 
     suspend fun getRecyclerViewMainList(
         taskList: List<Task>,
-        categoriesList: List<Category>,
         filter: TaskFilter
     ): List<HomeRecyclerViewItem>
 
     suspend fun getRecyclerViewCalendarList(
         baseDate: Long,
-        taskList: List<Task>,
-        categoriesList: List<Category>
+        taskList: List<Task>
     ): List<HomeRecyclerViewItem>
 }

@@ -121,12 +121,12 @@
         android:label="fragment_task_detail"
         tools:layout="@layout/fragment_task_detail" >
         <argument
-            android:name="taskWithCategory"
-            app:argType="com.example.todolistkotlin.presentation.model.TaskWithCategory" />
+            android:name="task"
+            app:argType="com.example.todolistkotlin.domain.model.Task" />
     </fragment>
     <fragment
         android:id="@+id/statisticsFragment"
-        android:name="com.example.todolistkotlin.StatisticsFragment"
+        android:name="com.example.todolistkotlin.presentation.fragment.StatisticsFragment"
         android:label="fragment_statistics"
         tools:layout="@layout/fragment_statistics" />
 </navigation>
