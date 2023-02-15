@@ -23,6 +23,13 @@ class MainActivityModelImpl @Inject constructor() : MainActivityModel {
     private val todayTaskMessage: UiText
     private val tomorrowTaskMessage: UiText
 
+    enum class TaskGroup {
+        OVERDUE,
+        TODAY,
+        TOMORROW,
+        OTHER_DATE
+    }
+
     init {
         emptyMessageCategory = UiText.StringResource(R.string.no_categories)
         emptyMessageTask = UiText.StringResource(R.string.no_tasks)
@@ -36,7 +43,8 @@ class MainActivityModelImpl @Inject constructor() : MainActivityModel {
 
     private fun addTaskItem(
         task: Task,
-        recyclerList: MutableList<HomeRecyclerViewItem>) {
+        recyclerList: MutableList<HomeRecyclerViewItem>
+    ) {
         if (task.category != null) {
             recyclerList.add(HomeRecyclerViewItem.TaskItem(task))
         } else {
@@ -51,94 +59,103 @@ class MainActivityModelImpl @Inject constructor() : MainActivityModel {
         taskList: List<Task>,
         filter: TaskFilter
     ): List<HomeRecyclerViewItem> {
+        val calendar = Calendar.getInstance()
+        DateUtils.resetTimeInCalendar(calendar)
+        val today = calendar.timeInMillis
+        calendar.add(Calendar.DAY_OF_MONTH, 1)
+        val tomorrow = calendar.timeInMillis
+        calendar.add(Calendar.DAY_OF_MONTH, 1)
+        val otherDay = calendar.timeInMillis
+
+        val filteredList = when (filter) {
+            is TaskFilter.All -> taskList.filter { !it.completed }
+            is TaskFilter.Today -> getTodayTasks(taskList)
+            is TaskFilter.Upcoming -> getFutureTasks(taskList)
+            is TaskFilter.Completed -> getCompletedTasks(taskList)
+        }.sortedBy { it.dateInMills }
+
         val recyclerList: MutableList<HomeRecyclerViewItem> = mutableListOf()
-
-        var filterList = when (filter) {
-            is TaskFilter.All -> {
-                getAllTasks(taskList)
-            }
-            is TaskFilter.Today -> {
-                getTodayTasks(taskList)
-            }
-            is TaskFilter.Upcoming -> {
-                getFutureTasks(taskList)
-            }
-            is TaskFilter.Completed -> {
-                getCompletedTasks(taskList)
-            }
-        }
-        filterList = filterList.sortedBy { it.dateInMills }
-
-        if (filterList.isNotEmpty()) {
+        if (filteredList.isNotEmpty()) {
             when (filter) {
-                is TaskFilter.Completed -> {
-                    recyclerList.addAll(createRestOfItems(filterList))
-                }
+                is TaskFilter.Completed -> recyclerList.addAll(generateTasksWithDates(filteredList))
                 else -> {
-                    val delayedTasks =
-                        filterList.filter { isTaskDelayed(it.dateInMills) }.toMutableList()
-                    recyclerList.addAll(createDelayedItems(delayedTasks))
-
-                    val todayTasks = filterList.filter {
-                        isTimeInMillsSameDay(
-                            Calendar.getInstance().timeInMillis,
-                            it.dateInMills
-                        )
+                    filteredList.groupBy {
+                        when {
+                            it.dateInMills < today -> TaskGroup.OVERDUE
+                            it.dateInMills < tomorrow -> TaskGroup.TODAY
+                            it.dateInMills < otherDay -> TaskGroup.TOMORROW
+                            else -> TaskGroup.OTHER_DATE
+                        }
+                    }.forEach { (group, list) ->
+                        when (group) {
+                            TaskGroup.OVERDUE -> {
+                                recyclerList.add(
+                                    HomeRecyclerViewItem.TaskDateItem(
+                                        delayedTaskMessage
+                                    )
+                                )
+                                recyclerList.addAll(list.map { task ->
+                                    HomeRecyclerViewItem.TaskItem(task)
+                                })
+                            }
+                            TaskGroup.TODAY -> {
+                                recyclerList.add(HomeRecyclerViewItem.TaskDateItem(todayTaskMessage))
+                                recyclerList.addAll(list.map { task ->
+                                    HomeRecyclerViewItem.TaskItem(task)
+                                })
+                            }
+                            TaskGroup.TOMORROW -> {
+                                recyclerList.add(
+                                    HomeRecyclerViewItem.TaskDateItem(
+                                        tomorrowTaskMessage
+                                    )
+                                )
+                                recyclerList.addAll(list.map { task ->
+                                    HomeRecyclerViewItem.TaskItem(task)
+                                })
+                            }
+                            TaskGroup.OTHER_DATE -> recyclerList.addAll(generateTasksWithDates(list))
+                        }
                     }
-                    recyclerList.addAll(createTodayItems(todayTasks))
-
-                    val tomorrowTasks = filterList.filter { isTaskForTomorrow(it.dateInMills) }
-                    recyclerList.addAll(createTomorrowItems(tomorrowTasks))
-
-                    val restOfTasks = filterList.toMutableList()
-                    restOfTasks.removeAll(delayedTasks)
-                    restOfTasks.removeAll(todayTasks)
-                    restOfTasks.removeAll(tomorrowTasks)
-                    recyclerList.addAll(createRestOfItems(restOfTasks))
                 }
             }
-        }
-        if (recyclerList.isEmpty()) {
+        } else {
             recyclerList.add(HomeRecyclerViewItem.Empty(emptyMessageTask))
         }
         return recyclerList
     }
 
-    private fun createDelayedItems(
-        taskList: List<Task>
-    ): List<HomeRecyclerViewItem> {
-        val recyclerList = ArrayList<HomeRecyclerViewItem>()
-        if (taskList.isNotEmpty()) {
-            recyclerList.add(HomeRecyclerViewItem.TaskDateItem(delayedTaskMessage))
-            taskList.forEach { task ->
-                addTaskItem(task, recyclerList)
-            }
-        }
-        return recyclerList
-    }
+    private fun generateTasksWithDates(list: List<Task>): List<HomeRecyclerViewItem> {
+        val recyclerList: MutableList<HomeRecyclerViewItem> = mutableListOf()
+        var lastDate = DateUtils.getCompleteDateWithoutYear(list.first().dateInMills)
+        var lastYear = DateUtils.longIntoYear(list.first().dateInMills)
+        recyclerList.add(HomeRecyclerViewItem.TaskDateItem(UiText.DynamicString(lastDate)))
 
-    private fun createTodayItems(
-        taskList: List<Task>
-    ): List<HomeRecyclerViewItem> {
-        val recyclerList = ArrayList<HomeRecyclerViewItem>()
-        if (taskList.isNotEmpty()) {
-            recyclerList.add(HomeRecyclerViewItem.TaskDateItem(todayTaskMessage))
-            taskList.forEach { task ->
-                addTaskItem(task, recyclerList)
+        list.forEach { task ->
+            val currentDate = DateUtils.getCompleteDateWithoutYear(task.dateInMills)
+            if (currentDate != lastDate) {
+                lastDate = currentDate
+                val currentYear = DateUtils.longIntoYear(task.dateInMills)
+                if (lastYear != currentYear) {
+                    lastYear = currentYear
+                    recyclerList.add(
+                        HomeRecyclerViewItem.TaskDateItem(
+                            UiText.DynamicString(
+                                DateUtils.getCompleteDate(task.dateInMills)
+                            )
+                        )
+                    )
+                } else {
+                    recyclerList.add(
+                        HomeRecyclerViewItem.TaskDateItem(
+                            UiText.DynamicString(
+                                currentDate
+                            )
+                        )
+                    )
+                }
             }
-        }
-        return recyclerList
-    }
-
-    private fun createTomorrowItems(
-        taskList: List<Task>
-    ): List<HomeRecyclerViewItem> {
-        val recyclerList = ArrayList<HomeRecyclerViewItem>()
-        if (taskList.isNotEmpty()) {
-            recyclerList.add(HomeRecyclerViewItem.TaskDateItem(tomorrowTaskMessage))
-            taskList.forEach { task ->
-                addTaskItem(task, recyclerList)
-            }
+            recyclerList.add(HomeRecyclerViewItem.TaskItem(task))
         }
         return recyclerList
     }
@@ -171,10 +188,6 @@ class MainActivityModelImpl @Inject constructor() : MainActivityModel {
         return recyclerList
     }
 
-    private fun getAllTasks(taskList: List<Task>): List<Task> {
-        return taskList.filter { !it.completed }
-    }
-
     private fun getTodayTasks(taskList: List<Task>): List<Task> {
         return taskList.filter {
             isTimeInMillsSameDay(
@@ -195,14 +208,6 @@ class MainActivityModelImpl @Inject constructor() : MainActivityModel {
                 it.dateInMills
             ) && !it.completed
         }
-    }
-
-    private fun isTaskForTomorrow(dateInMills: Long): Boolean {
-        val tomorrowDate = Calendar.getInstance()
-        tomorrowDate.add(Calendar.DAY_OF_MONTH, 1)
-        return DateUtils.longIntoDate(tomorrowDate.timeInMillis) == DateUtils.longIntoDate(
-            dateInMills
-        )
     }
 
     override suspend fun getRecyclerViewCalendarList(
