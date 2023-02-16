@@ -4,6 +4,8 @@ import com.example.todolistkotlin.di.CategoriesRef
 import com.example.todolistkotlin.domain.model.Category
 import com.example.todolistkotlin.common.Response
 import com.example.todolistkotlin.common.Constants.FIELD_NAME
+import com.example.todolistkotlin.data.model.CategoryEntity
+import com.example.todolistkotlin.data.model.toCategory
 import com.example.todolistkotlin.domain.repository.*
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
@@ -20,15 +22,11 @@ class CategoryRepositoryImpl @Inject constructor(
     private val categoryReferenceOrderByName = categoriesRef.orderBy(FIELD_NAME)
 
     override suspend fun getCategories() = callbackFlow {
-        val snapshotListener = categoryReferenceOrderByName.addSnapshotListener {snapshot, e ->
-
-            val categoriesResponse = if (snapshot != null) {
-                val categories = snapshot.toObjects(Category::class.java)
-                Response.Success(categories)
-            } else {
-                Response.Failure(e)
-            }
-            trySend(categoriesResponse)
+        val snapshotListener = categoryReferenceOrderByName.addSnapshotListener { snapshot, e ->
+            val response = snapshot?.toObjects(CategoryEntity::class.java)
+                ?.let { list -> Response.Success(list.map { it.toCategory() }) }
+                ?: Response.Failure(e)
+            trySend(response)
         }
         awaitClose {
             snapshotListener.remove()
