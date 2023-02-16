@@ -14,12 +14,9 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -31,34 +28,24 @@ class TaskRepositoryImpl @Inject constructor(
 
     override suspend fun getTasks() = callbackFlow {
         val snapshotListener = taskReferenceOrderByData.addSnapshotListener { snapshot, e ->
-            val tasksResponse = if (snapshot != null) {
-                val tasks = snapshot.toObjects(TaskEntity::class.java)
-                val tasksWithCategoryList = mutableListOf<Task>()
-
-                runBlocking {
-                    tasks.forEach { taskEntity ->
-                        launch(Dispatchers.IO) {
-                            val category = async {
-                                if(taskEntity.categoryRef != null) taskEntity.categoryRef!!.get().await()
-                                    .toObject(Category::class.java)
-                                else null
-                            }
-                            tasksWithCategoryList.add(
-                                taskEntity.toTask(category.await())
-                            )
-                        }
-                    }
-                }
-
-                Response.Success(tasksWithCategoryList)
-            } else {
-                Response.Failure(e)
-            }
-            trySend(tasksResponse)
+            val response = snapshot?.toObjects(TaskEntity::class.java)
+                ?.let { runCatching { runBlocking { fetchCategories(it) } }.getOrNull() }
+                ?.let { Response.Success(it) }
+                ?: Response.Failure(e)
+            trySend(response)
         }
         awaitClose {
             snapshotListener.remove()
         }
+    }
+
+    private suspend fun fetchCategories(list: List<TaskEntity>) : MutableList<Task> = coroutineScope {
+        list.map { taskEntity ->
+            async(Dispatchers.IO) {
+                val category = taskEntity.categoryRef?.get()?.await()?.toObject(Category::class.java)
+                taskEntity.toTask(category)
+            }
+        }.awaitAll().toMutableList()
     }
 
     override suspend fun addTask(title: String, description: String, categoryRef: DocumentReference, priority: EnumTaskPriority, taskDate: Long): AddTaskResponse {
@@ -111,31 +98,4 @@ class TaskRepositoryImpl @Inject constructor(
             Response.Failure(e)
         }
     }
-
-    /*
-    override suspend fun deleteTasksByCategory(id: String): Boolean {
-        return suspendCoroutine { continuation ->
-            tasksRef.whereEqualTo(Constants.FIELD_CATEGORY_ID, id)
-                .get()
-                .addOnSuccessListener { query ->
-                    val batch = FirebaseFirestore.getInstance().batch()
-
-                    val taskList = query.documents
-                    for (task in taskList) {
-                        batch.delete(task.reference)
-                    }
-                    batch.commit()
-                        .addOnSuccessListener {
-                            continuation.resumeWith(Result.success(true))
-                        }
-                        .addOnFailureListener {
-                            continuation.resumeWith(Result.failure(it))
-                        }
-                }
-                .addOnFailureListener {
-                    continuation.resumeWith(Result.failure(it))
-                }
-        }
-    }
-     */
 }

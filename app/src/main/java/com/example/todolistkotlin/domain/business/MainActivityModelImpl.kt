@@ -12,7 +12,6 @@ import com.example.todolistkotlin.util.DateUtils.Companion.getTimeInMillisResete
 import com.example.todolistkotlin.util.DateUtils.Companion.isTimeInMillsSameDay
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 class MainActivityModelImpl @Inject constructor() : MainActivityModel {
 
@@ -160,34 +159,6 @@ class MainActivityModelImpl @Inject constructor() : MainActivityModel {
         return recyclerList
     }
 
-    private fun createRestOfItems(
-        taskList: List<Task>
-    ): List<HomeRecyclerViewItem> {
-        val actualYear = DateUtils.longIntoYear(Calendar.getInstance().timeInMillis)
-        val recyclerList = ArrayList<HomeRecyclerViewItem>()
-        if (taskList.isNotEmpty()) {
-            var currentDate = DateUtils.longIntoDate(taskList[0].dateInMills)
-            if (actualYear != DateUtils.longIntoYear(taskList[0].dateInMills)) {
-                recyclerList.add(newDateItemWithYear(taskList[0].dateInMills))
-            } else {
-                recyclerList.add(newDateItemWithoutYear(taskList[0].dateInMills))
-            }
-            taskList.forEach { task ->
-                val currentTaskDate = DateUtils.longIntoDate(task.dateInMills)
-                if (currentDate != currentTaskDate) {
-                    if (actualYear != DateUtils.longIntoYear(task.dateInMills)) {
-                        recyclerList.add(newDateItemWithYear(task.dateInMills))
-                    } else {
-                        recyclerList.add(newDateItemWithoutYear(task.dateInMills))
-                    }
-                    currentDate = currentTaskDate
-                }
-                addTaskItem(task, recyclerList)
-            }
-        }
-        return recyclerList
-    }
-
     private fun getTodayTasks(taskList: List<Task>): List<Task> {
         return taskList.filter {
             isTimeInMillsSameDay(
@@ -215,12 +186,14 @@ class MainActivityModelImpl @Inject constructor() : MainActivityModel {
         taskList: List<Task>
     ): List<HomeRecyclerViewItem> {
         val recyclerList: MutableList<HomeRecyclerViewItem> = mutableListOf()
-        val tasksFilter = taskList.filter {
+        taskList.filter {
             DateUtils.longIntoDate(baseDate) == DateUtils.longIntoDate(it.dateInMills) && !it.completed
-        }
-        recyclerList.addAll(createRestOfItems(tasksFilter))
-        if (recyclerList.isEmpty()) {
-            recyclerList.add(HomeRecyclerViewItem.Empty(emptyMessageTask))
+        }.let { list ->
+            if(list.isNotEmpty()) {
+                recyclerList.addAll(generateTasksWithDates(list))
+            } else {
+                recyclerList.add(HomeRecyclerViewItem.Empty(emptyMessageTask))
+            }
         }
         return recyclerList
     }
@@ -234,28 +207,14 @@ class MainActivityModelImpl @Inject constructor() : MainActivityModel {
         return taskDate.before(currentDate)
     }
 
-    private fun newDateItemWithoutYear(date: Long): HomeRecyclerViewItem.TaskDateItem {
-        return HomeRecyclerViewItem.TaskDateItem(
-            UiText.DynamicString(DateUtils.getCompleteDateWithoutYear(date))
-        )
-    }
-
-    private fun newDateItemWithYear(date: Long): HomeRecyclerViewItem.TaskDateItem {
-        return HomeRecyclerViewItem.TaskDateItem(
-            UiText.DynamicString(
-                DateUtils.getCompleteDate(date)
-            )
-        )
-    }
-
     override suspend fun getCategoriesRecyclerItem(categoriesList: List<Category>): List<CategoryRecyclerViewItem> {
         val recyclerItemList = mutableListOf<CategoryRecyclerViewItem>()
         if (categoriesList.isEmpty()) {
             recyclerItemList.add(CategoryRecyclerViewItem.Empty(emptyMessageCategory))
         } else {
-            categoriesList.forEach {
-                recyclerItemList.add(CategoryRecyclerViewItem.CategoryItem(it))
-            }
+            recyclerItemList.addAll(categoriesList.map { category ->
+                CategoryRecyclerViewItem.CategoryItem(category)
+            })
         }
         return recyclerItemList
     }
