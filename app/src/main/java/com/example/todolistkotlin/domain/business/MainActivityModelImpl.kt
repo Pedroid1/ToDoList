@@ -15,44 +15,14 @@ import javax.inject.Inject
 
 class MainActivityModelImpl @Inject constructor() : MainActivityModel {
 
-    private val emptyMessageCategory: UiText
-    private val emptyMessageTask: UiText
-    private val emptyMessageFilterDateTask: UiText
-    private val delayedTaskMessage: UiText
-    private val todayTaskMessage: UiText
-    private val tomorrowTaskMessage: UiText
-
-    enum class TaskGroup {
-        OVERDUE,
-        TODAY,
-        TOMORROW,
-        OTHER_DATE
-    }
-
-    init {
-        emptyMessageCategory = UiText.StringResource(R.string.no_categories)
-        emptyMessageTask = UiText.StringResource(R.string.no_tasks)
-        emptyMessageFilterDateTask = UiText.StringResource(R.string.no_selected_date_task)
-        delayedTaskMessage = UiText.StringResource(R.string.delayed_tasks)
-        todayTaskMessage = UiText.StringResource(R.string.today_tasks)
-        tomorrowTaskMessage = UiText.StringResource(R.string.tomorrow_tasks)
-    }
+    private val emptyMessageCategory = UiText.StringResource(R.string.no_categories)
+    private val emptyMessageTask = UiText.StringResource(R.string.no_tasks)
+    private val emptyMessageFilterDateTask = UiText.StringResource(R.string.no_selected_date_task)
+    private val delayedTaskMessage = UiText.StringResource(R.string.delayed_tasks)
+    private val todayTaskMessage = UiText.StringResource(R.string.today_tasks)
+    private val tomorrowTaskMessage = UiText.StringResource(R.string.tomorrow_tasks)
 
     //------------------TASKS------------------------------
-
-    private fun addTaskItem(
-        task: Task,
-        recyclerList: MutableList<HomeRecyclerViewItem>
-    ) {
-        if (task.category != null) {
-            recyclerList.add(HomeRecyclerViewItem.TaskItem(task))
-        } else {
-            val item = recyclerList.lastOrNull()
-            if (item != null && item is HomeRecyclerViewItem.TaskDateItem) {
-                recyclerList.removeLast()
-            }
-        }
-    }
 
     override suspend fun getRecyclerViewMainList(
         taskList: List<Task>,
@@ -71,7 +41,7 @@ class MainActivityModelImpl @Inject constructor() : MainActivityModel {
             is TaskFilter.Today -> getTodayTasks(taskList)
             is TaskFilter.Upcoming -> getFutureTasks(taskList)
             is TaskFilter.Completed -> getCompletedTasks(taskList)
-        }.sortedBy { it.dateInMills }
+        }
 
         val recyclerList: MutableList<HomeRecyclerViewItem> = mutableListOf()
         if (filteredList.isNotEmpty()) {
@@ -218,4 +188,11 @@ class MainActivityModelImpl @Inject constructor() : MainActivityModel {
         }
         return recyclerItemList
     }
+}
+
+enum class TaskGroup {
+    OVERDUE,
+    TODAY,
+    TOMORROW,
+    OTHER_DATE
 }

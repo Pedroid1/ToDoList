@@ -184,9 +184,8 @@ class HomeViewModel @Inject constructor(
                             }
                         }
 
-                        Log.d("Teste", "antes")
-                        taskList = removeTaskWithNullCategory(response.data).toMutableList()
-                        Log.d("Teste", "Passou")
+
+                        taskList = response.data
                         updateMainViewState(
                             _homeViewState.value?.copy(
                                 isFetchCompleted = true,
@@ -231,9 +230,4 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.Main) {
             copy?.let { _homeViewState.value = it }
         }
-
-    private fun removeTaskWithNullCategory(taskList: List<Task>): List<Task> {
-        Log.d("Teste", "entrou")
-        return taskList.filter { it.category != null }
-    }
 }
