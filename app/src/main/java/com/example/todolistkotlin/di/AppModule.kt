@@ -7,6 +7,7 @@ import com.example.todolistkotlin.common.Constants.TASKS_COLLECTION
 import com.example.todolistkotlin.common.Constants.USERS_COLLECTION
 import com.example.todolistkotlin.domain.use_case.category.*
 import com.example.todolistkotlin.domain.use_case.task.*
+import com.example.todolistkotlin.domain.use_case.validation.create_task.ValidationCreateTaskUseCases
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
@@ -76,5 +77,9 @@ object AppModule {
         deleteCategory = DeleteCategory(repo),
         getCategoryRefById = GetCategoryReferenceById(repo)
     )
+
+    @Provides
+    @Singleton
+    fun provideTaskValidationUseCases() = ValidationCreateTaskUseCases()
 
 }

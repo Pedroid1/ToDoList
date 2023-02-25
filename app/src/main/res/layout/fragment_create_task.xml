@@ -4,8 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
-            name="viewModelXml"
+            name="vm"
             type="com.example.todolistkotlin.presentation.viewmodel.CreateTaskViewModel" />
     </data>
 
@@ -167,7 +168,8 @@
                     android:cursorVisible="false"
                     android:drawableEnd="@drawable/ic_calendar"
                     android:focusable="false"
-                    android:hint="00/00/0000" />
+                    android:hint="00/00/0000"
+                    android:text="@{vm.selectedDateLiveData}" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.example.todolistkotlin.presentation.components.CustomTextView
@@ -203,7 +205,8 @@
                     android:cursorVisible="false"
                     android:drawableEnd="@drawable/ic_time"
                     android:focusable="false"
-                    android:hint="00:00" />
+                    android:hint="00:00"
+                    android:text="@{vm.selectedTimeLiveData}" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.example.todolistkotlin.presentation.components.CustomTextView
@@ -291,7 +294,7 @@
                 android:layout_marginTop="@dimen/spacing_30"
                 android:layout_marginEnd="@dimen/layout_margin"
                 android:layout_marginBottom="@dimen/layout_margin"
-                android:clickable="@{viewModelXml.createButtonClickable}"
+                android:clickable="@{vm.createButtonClickable}"
                 android:text="@string/create"
                 app:buttonPriority="primary"
                 app:layout_constraintBottom_toBottomOf="parent"

@@ -1,6 +1,5 @@
 package com.example.todolistkotlin.presentation.ui_events
 
-import com.example.todolistkotlin.domain.model.Category
 import com.example.todolistkotlin.enuns.EnumTaskPriority
 
 sealed class CreateTaskFormEvent {

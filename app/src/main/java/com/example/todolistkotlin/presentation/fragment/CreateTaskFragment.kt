@@ -47,7 +47,6 @@ class CreateTaskFragment : Fragment() {
     private lateinit var arrayAdapter: ArrayAdapter<String>
     private lateinit var _binding: FragmentCreateTaskBinding
     private val viewModel: CreateTaskViewModel by lazy { getCreateTaskViewModel() }
-    private val homeViewModel: HomeViewModel by lazy { ViewModelProvider(requireActivity())[HomeViewModel::class.java] }
     private val categoryViewModel: CategoryViewModel by lazy { ViewModelProvider(requireActivity())[CategoryViewModel::class.java] }
 
     private lateinit var mediumFill: Drawable
@@ -74,7 +73,7 @@ class CreateTaskFragment : Fragment() {
     }
 
     private fun initialWork() {
-        _binding.viewModelXml = this.viewModel
+        _binding.vm = this.viewModel
         _binding.lifecycleOwner = viewLifecycleOwner
 
         setupEdtInputType()
@@ -138,6 +137,9 @@ class CreateTaskFragment : Fragment() {
 
             createBtn.setOnClickListener {
                 it.hideKeyboard()
+
+                viewModel.onEvent(CreateTaskFormEvent.TitleChanged(_binding.taskNameEdt.text.toString().trim()))
+                viewModel.onEvent(CreateTaskFormEvent.DescriptionChanged(_binding.taskDescriptionEdt.text.toString().trim()))
                 viewModel.onEvent(CreateTaskFormEvent.SubmitTask)
             }
 
@@ -170,14 +172,6 @@ class CreateTaskFragment : Fragment() {
                 if (hasFocus) {
                     _binding.taskNameInput.error = null
                 }
-            }
-
-            taskNameEdt.addTextChangedListener {
-                viewModel.onEvent(CreateTaskFormEvent.TitleChanged(it.toString().trim()))
-            }
-
-            taskDescriptionEdt.addTextChangedListener {
-                viewModel.onEvent(CreateTaskFormEvent.DescriptionChanged(it.toString().trim()))
             }
 
             filledExposed.setOnFocusChangeListener { view, _ ->
@@ -329,7 +323,10 @@ class CreateTaskFragment : Fragment() {
             loadFilledExposedAdapter(state.categoryList)
         }
         state.error?.let {
-            _binding.root.showSnackBar(getString(R.string.error_fetching_categories), Snackbar.LENGTH_LONG)
+            _binding.root.showSnackBar(
+                getString(R.string.error_fetching_categories),
+                Snackbar.LENGTH_LONG
+            )
         }
     }
 
@@ -345,44 +342,25 @@ class CreateTaskFragment : Fragment() {
                 when (validation) {
                     is CreateTaskFormValidation.TitleValidation -> {
                         _binding.taskNameInput.error =
-                            if (validation.result.errorMessage != null) validation.result.errorMessage.asString(
-                                requireContext()
-                            ) else null
+                            validation.result.errorMessage?.asString(requireContext())
                     }
                     is CreateTaskFormValidation.CategoryValidation -> {
                         _binding.taskCategoryInput.error =
-                            if (validation.result.errorMessage != null) validation.result.errorMessage.asString(
-                                requireContext()
-                            ) else null
+                            validation.result.errorMessage?.asString(requireContext())
                     }
                     is CreateTaskFormValidation.DateValidation -> {
                         _binding.taskDateInput.error =
-                            if (validation.result.errorMessage != null) validation.result.errorMessage.asString(
-                                requireContext()
-                            ) else null
+                            validation.result.errorMessage?.asString(requireContext())
                     }
                     is CreateTaskFormValidation.TimeValidation -> {
                         _binding.taskHourInput.error =
-                            if (validation.result.errorMessage != null) validation.result.errorMessage.asString(
-                                requireContext()
-                            ) else null
+                            validation.result.errorMessage?.asString(requireContext())
                     }
                     is CreateTaskFormValidation.PriorityValidation -> {
                         _binding.taskPriorityLayoutError.error =
-                            if (validation.result.errorMessage != null) validation.result.errorMessage.asString(
-                                requireContext()
-                            ) else null
+                            validation.result.errorMessage?.asString(requireContext())
                     }
                 }
-            }
-        }
-
-        viewModel.apply {
-            selectedDateLiveData.observe(viewLifecycleOwner) {
-                _binding.taskDateEdt.setText(it)
-            }
-            selectedTimeLiveData.observe(viewLifecycleOwner) {
-                _binding.taskHourEdt.setText(it)
             }
         }
     }

@@ -48,8 +48,8 @@ class MainActivity : AppCompatActivity() {
                     showFloatingButton(false)
                 }
                 else -> {
-                    showBottomNav(false)
                     showFloatingButton(false)
+                    showBottomNav(false)
                 }
             }
         }

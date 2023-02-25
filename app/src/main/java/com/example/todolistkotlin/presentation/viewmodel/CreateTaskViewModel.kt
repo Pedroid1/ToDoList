@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todolistkotlin.common.Response
-import com.example.todolistkotlin.domain.model.Task
 import com.example.todolistkotlin.domain.repository.AddTaskResponse
 import com.example.todolistkotlin.domain.use_case.category.CategoryUseCases
 import com.example.todolistkotlin.domain.use_case.task.TaskUseCases
@@ -27,7 +26,8 @@ import javax.inject.Inject
 @HiltViewModel
 class CreateTaskViewModel @Inject constructor(
     private val taskUseCases: TaskUseCases,
-    private val categoryUseCases: CategoryUseCases
+    private val categoryUseCases: CategoryUseCases,
+    private val validationUseCases: ValidationCreateTaskUseCases
 ) : ViewModel() {
 
     private val _addTaskResult = MutableLiveData<AddTaskResponse>()
@@ -37,7 +37,6 @@ class CreateTaskViewModel @Inject constructor(
     val createButtonClickable = ObservableBoolean(true)
     var isDateSelected: Boolean = false
     var isTimeSelected: Boolean = false
-    private val validationUseCases = ValidationCreateTaskUseCases()
 
     private var title: String = ""
     private var description: String = ""
