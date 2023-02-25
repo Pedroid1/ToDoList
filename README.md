@@ -11,7 +11,7 @@
 
 <p align="center">  
 
-⭐ Esse é um projeto para demonstrar meu conhecimento técnico no desenvolvimento Android nativo com Kotlin. Mais informações técnicas abaixo.
+⭐ Esse é um projeto de criação própria para demonstrar meu conhecimento técnico no desenvolvimento Android nativo com Kotlin. Mais informações técnicas abaixo.
 
 Aplicativo que permite o usuário criar tarefas e categorias, com uma listagem por ordem de data/hora na tela principal, oferece também uma visualização no calendário destacando os dias que tem tarefas em aberto e por último, uma tela de perfil permite o usuário visualizar gráficos relacionando suas tarefas completas/pendentes e uma relação de tarefas por categoria.
 </p>
