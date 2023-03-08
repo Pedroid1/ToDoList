@@ -162,7 +162,7 @@ class MainActivityModelImpl @Inject constructor() : MainActivityModel {
             if(list.isNotEmpty()) {
                 recyclerList.addAll(generateTasksWithDates(list))
             } else {
-                recyclerList.add(HomeRecyclerViewItem.Empty(emptyMessageTask))
+                recyclerList.add(HomeRecyclerViewItem.Empty(emptyMessageFilterDateTask))
             }
         }
         return recyclerList
