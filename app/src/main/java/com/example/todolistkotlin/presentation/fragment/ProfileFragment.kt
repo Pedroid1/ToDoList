@@ -1,6 +1,7 @@
 package com.example.todolistkotlin.presentation.fragment
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.os.Bundle
@@ -18,10 +19,12 @@ import com.example.todolistkotlin.R
 import com.example.todolistkotlin.common.Constants.NIGHT_KEY
 import com.example.todolistkotlin.databinding.FragmentProfileBinding
 import com.example.todolistkotlin.domain.model.Task
+import com.example.todolistkotlin.presentation.activity.SplashScreenActivity
 import com.example.todolistkotlin.presentation.states.HomeViewState
 import com.example.todolistkotlin.presentation.states.UserInfoState
 import com.example.todolistkotlin.presentation.viewmodel.HomeViewModel
 import com.example.todolistkotlin.util.*
+import com.firebase.ui.auth.AuthUI
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -83,7 +86,11 @@ class ProfileFragment : Fragment() {
             .setTitle(getString(R.string.sign_out_dialog))
             .setMessage(R.string.sign_out_info)
             .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                Firebase.auth.signOut()
+                AuthUI.getInstance().signOut(requireActivity()).addOnSuccessListener {
+                    val intent = Intent(requireContext(), SplashScreenActivity::class.java)
+                    requireActivity().startActivity(intent)
+                    requireActivity().finish()
+                }
             }
             .setNegativeButton(getString(R.string.no)) { _, _ -> }
             .show()
