@@ -54,11 +54,6 @@ class HomeViewModel @Inject constructor(
 
     var taskList: MutableList<Task> = ArrayList()
 
-
-    private val coroutineHandler = CoroutineExceptionHandler { _, throwable ->
-        Log.d("coroutineHandler", "Exception: $throwable")
-    }
-
     init {
         selectedTimeCalendarFragment = DateUtils.getTimeInMillisResetedTime(Calendar.getInstance())
         getUserInfo()
