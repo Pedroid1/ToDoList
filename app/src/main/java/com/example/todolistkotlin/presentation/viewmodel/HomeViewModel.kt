@@ -1,6 +1,5 @@
 package com.example.todolistkotlin.presentation.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -17,10 +16,10 @@ import com.example.todolistkotlin.presentation.states.UserInfoState
 import com.example.todolistkotlin.presentation.ui_events.ErrorEvent
 import com.example.todolistkotlin.presentation.ui_events.TaskEvent
 import com.example.todolistkotlin.util.DateUtils
+import com.google.common.annotations.VisibleForTesting
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -88,7 +87,7 @@ class HomeViewModel @Inject constructor(
                 viewModelScope.launch {
                     _taskEventChannel.send(event)
                 }
-                fakeDeletion(event.task)
+                fakeDelete(event.task)
             }
             is TaskEvent.Complete -> {
                 viewModelScope.launch {
@@ -100,12 +99,12 @@ class HomeViewModel @Inject constructor(
                 restoreFakeComplete(event.task)
             }
             is TaskEvent.RestoreDelete -> {
-                restoreFakeDeletion(event.task)
+                restoreFakeDelete(event.task)
             }
         }
     }
 
-    private fun restoreFakeDeletion(task: Task) {
+    private fun restoreFakeDelete(task: Task) {
         if (taskList.find { it.id == task.id } == null) {
             taskList.add(task)
             _homeViewState.value = _homeViewState.value?.copy(taskList = taskList)
@@ -121,7 +120,7 @@ class HomeViewModel @Inject constructor(
         pendingTaskComplete = null
     }
 
-    private fun fakeDeletion(task: Task) {
+    private fun fakeDelete(task: Task) {
         pendingTaskDelete = task
         taskList.remove(task)
         _homeViewState.value = _homeViewState.value?.copy(taskList = taskList)
@@ -137,14 +136,14 @@ class HomeViewModel @Inject constructor(
 
     //---------------------TASKS----------------
 
-    suspend fun getRecyclerViewMainList(
+    suspend fun getHomeRecyclerList(
         taskList: List<Task>,
         taskFilter: TaskFilter
     ): List<HomeRecyclerViewItem> {
         return model.getRecyclerViewMainList(taskList, taskFilter)
     }
 
-    suspend fun getRecyclerViewMainListFilterDate(
+    suspend fun getCalendarRecyclerList(
         baseTimeInMillis: Long,
         taskList: List<Task>
     ): List<HomeRecyclerViewItem> {

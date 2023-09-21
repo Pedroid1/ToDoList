@@ -6,7 +6,7 @@ import com.example.todolistkotlin.presentation.utils.UiText
 
 class ValidateCategory {
     operator fun invoke(categoryId: String?): ValidationResult {
-        return if(categoryId == null || categoryId.isEmpty()) {
+        return if(categoryId.isNullOrEmpty()) {
             ValidationResult(
                 successful = false,
                 UiText.StringResource(R.string.select_category)

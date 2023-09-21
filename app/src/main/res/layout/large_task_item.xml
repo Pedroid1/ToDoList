@@ -10,7 +10,7 @@
 
         <variable
             name="listener"
-            type="com.example.todolistkotlin.presentation.adapter.recycler.HomeRecyclerAdapter.TaskAdapterListener" />
+            type="com.example.todolistkotlin.presentation.adapter.recycler.HomeRecyclerAdapter.HomeAdapterEvent" />
     </data>
 
     <com.google.android.material.card.MaterialCardView

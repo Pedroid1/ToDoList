@@ -26,7 +26,7 @@ sealed class HomeRecyclerViewHolder(binding: ViewBinding) : RecyclerView.ViewHol
 
     class TaskItem(
         private val _binding: LargeTaskItemBinding,
-        private val clickListener: HomeRecyclerAdapter.TaskAdapterListener
+        private val clickListener: HomeRecyclerAdapter.HomeAdapterEvent
     ) : HomeRecyclerViewHolder(_binding) {
         fun bindTask(taskItem: HomeRecyclerViewItem.TaskItem) {
             val context = _binding.root.context

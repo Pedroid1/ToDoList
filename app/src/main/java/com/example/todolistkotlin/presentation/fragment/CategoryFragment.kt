@@ -30,7 +30,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-@AndroidEntryPoint
 class CategoryFragment : Fragment() {
 
     private lateinit var _binding: FragmentCategoryBinding

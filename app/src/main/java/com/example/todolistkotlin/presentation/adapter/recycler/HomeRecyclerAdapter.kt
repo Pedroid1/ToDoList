@@ -12,7 +12,7 @@ import com.example.todolistkotlin.databinding.TaskDateItemBinding
 import com.example.todolistkotlin.domain.model.Task
 import com.example.todolistkotlin.presentation.viewholder.HomeRecyclerViewHolder
 
-class HomeRecyclerAdapter(private val listener: TaskAdapterListener) :
+class HomeRecyclerAdapter(private val listener: HomeAdapterEvent) :
     ListAdapter<HomeRecyclerViewItem, HomeRecyclerViewHolder>(DIFFUTILS) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeRecyclerViewHolder {
@@ -96,7 +96,7 @@ class HomeRecyclerAdapter(private val listener: TaskAdapterListener) :
         }
     }
 
-    interface TaskAdapterListener {
+    interface HomeAdapterEvent {
         fun onTaskClicked(task: Task)
     }
 

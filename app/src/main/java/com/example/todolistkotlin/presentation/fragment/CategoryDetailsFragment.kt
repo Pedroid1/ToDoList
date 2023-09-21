@@ -30,9 +30,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-@AndroidEntryPoint
-class CategoryDetailsFragment : Fragment(), SwipeTouchHelper.OnTaskEvent,
-    HomeRecyclerAdapter.TaskAdapterListener {
+class CategoryDetailsFragment : Fragment(), SwipeTouchHelper.SwipeTouchHelperEvent,
+    HomeRecyclerAdapter.HomeAdapterEvent {
 
     private lateinit var _binding: FragmentCategoryDetailsBinding
     private val homeViewModel: HomeViewModel by lazy { ViewModelProvider(requireActivity())[HomeViewModel::class.java] }
@@ -137,7 +136,7 @@ class CategoryDetailsFragment : Fragment(), SwipeTouchHelper.OnTaskEvent,
         lifecycleScope.launch(Dispatchers.Default) {
             val taskListFilter = taskList.filter { it.category?.id == args.categoryId }
             val recyclerList =
-                homeViewModel.getRecyclerViewMainList(taskListFilter, TaskFilter.All())
+                homeViewModel.getHomeRecyclerList(taskListFilter, TaskFilter.All())
             lifecycleScope.launch(Dispatchers.Main) {
                 adapter.submitList(recyclerList)
             }
@@ -185,7 +184,7 @@ class CategoryDetailsFragment : Fragment(), SwipeTouchHelper.OnTaskEvent,
         requireActivity().onBackPressedDispatcher.onBackPressed()
     }
 
-    override fun onTaskEvent(taskEvent: TaskEvent) {
+    override fun onTaskSwiped(taskEvent: TaskEvent) {
         homeViewModel.onTaskEvent(taskEvent)
     }
 

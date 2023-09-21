@@ -37,7 +37,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import java.util.*
 
-@AndroidEntryPoint
 class CreateTaskFragment : Fragment() {
 
     companion object {

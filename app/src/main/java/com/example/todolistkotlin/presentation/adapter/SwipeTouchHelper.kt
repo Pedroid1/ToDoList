@@ -21,7 +21,7 @@ class SwipeTouchHelper(
     dragDirs: Int,
     swipeDirs: Int,
     private var adapter: HomeRecyclerAdapter,
-    private val onEventListener: OnTaskEvent
+    private val onEventListener: SwipeTouchHelperEvent
 ) : ItemTouchHelper.SimpleCallback(dragDirs, swipeDirs) {
 
     private var taskFilter: TaskFilter = TaskFilter.All()
@@ -30,8 +30,8 @@ class SwipeTouchHelper(
         this.taskFilter = taskFilter
     }
 
-    interface OnTaskEvent {
-        fun onTaskEvent(taskEvent: TaskEvent)
+    interface SwipeTouchHelperEvent {
+        fun onTaskSwiped(taskEvent: TaskEvent)
     }
 
     override fun getMovementFlags(
@@ -72,10 +72,10 @@ class SwipeTouchHelper(
 
         when (direction) {
             ItemTouchHelper.LEFT -> {
-                onEventListener.onTaskEvent(TaskEvent.Delete(recyclerItem.task))
+                onEventListener.onTaskSwiped(TaskEvent.Delete(recyclerItem.task))
             }
             ItemTouchHelper.RIGHT -> {
-                onEventListener.onTaskEvent(TaskEvent.Complete(recyclerItem.task))
+                onEventListener.onTaskSwiped(TaskEvent.Complete(recyclerItem.task))
             }
             else -> Unit
         }

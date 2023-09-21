@@ -30,9 +30,8 @@ import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
 
-@AndroidEntryPoint
 class CalendarFragment : Fragment(), CalendarAdapter.OnDayClickListener,
-    SwipeTouchHelper.OnTaskEvent, HomeRecyclerAdapter.TaskAdapterListener {
+    SwipeTouchHelper.SwipeTouchHelperEvent, HomeRecyclerAdapter.HomeAdapterEvent {
 
     private lateinit var _binding: FragmentCalendarBinding
     private val homeViewModel: HomeViewModel by lazy { ViewModelProvider(requireActivity())[HomeViewModel::class.java] }
@@ -204,7 +203,7 @@ class CalendarFragment : Fragment(), CalendarAdapter.OnDayClickListener,
     private fun prepareRecyclerView(taskList: List<Task>) {
         _binding.calendarTaskRecycler.adapter = recyclerAdapter
         lifecycleScope.launch(Dispatchers.Default) {
-            val recyclerList = homeViewModel.getRecyclerViewMainListFilterDate(
+            val recyclerList = homeViewModel.getCalendarRecyclerList(
                 homeViewModel.selectedTimeCalendarFragment!!,
                 taskList
             )
@@ -220,7 +219,7 @@ class CalendarFragment : Fragment(), CalendarAdapter.OnDayClickListener,
         prepareRecyclerView(homeViewModel.taskList)
     }
 
-    override fun onTaskEvent(taskEvent: TaskEvent) {
+    override fun onTaskSwiped(taskEvent: TaskEvent) {
         homeViewModel.onTaskEvent(taskEvent)
     }
 

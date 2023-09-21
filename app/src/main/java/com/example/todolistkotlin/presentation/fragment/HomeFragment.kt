@@ -28,9 +28,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-@AndroidEntryPoint
-class HomeFragment : Fragment(), SwipeTouchHelper.OnTaskEvent,
-    HomeRecyclerAdapter.TaskAdapterListener {
+class HomeFragment : Fragment(), SwipeTouchHelper.SwipeTouchHelperEvent,
+    HomeRecyclerAdapter.HomeAdapterEvent {
 
     private lateinit var _binding: FragmentHomeBinding
     private val viewModel: HomeViewModel by lazy { ViewModelProvider(requireActivity())[HomeViewModel::class.java] }
@@ -65,14 +64,17 @@ class HomeFragment : Fragment(), SwipeTouchHelper.OnTaskEvent,
                     viewModel.setTaskFilter(TaskFilter.All())
                     swipeTouchHelper.setTaskFilter(TaskFilter.All())
                 }
+
                 R.id.chip_today -> {
                     viewModel.setTaskFilter(TaskFilter.Today())
                     swipeTouchHelper.setTaskFilter(TaskFilter.Today())
                 }
+
                 R.id.chip_upcoming -> {
                     viewModel.setTaskFilter(TaskFilter.Upcoming())
                     swipeTouchHelper.setTaskFilter(TaskFilter.Upcoming())
                 }
+
                 R.id.chip_completed -> {
                     viewModel.setTaskFilter(TaskFilter.Completed())
                     swipeTouchHelper.setTaskFilter(TaskFilter.Completed())
@@ -103,21 +105,18 @@ class HomeFragment : Fragment(), SwipeTouchHelper.OnTaskEvent,
             prepareRecyclerView(state.taskList, state.taskFilter)
         }
         state.error?.let {
-            //TODO - Handle error
+            //TODO - Exibir layout de error
         }
     }
 
     private fun handleUserInfoState(state: UserInfoState) {
-        if (state.username != null) {
-            try {
-                val firstName = state.username.split(" ")[0]
-                _binding.saluteTxt.text = getString(R.string.salute_with_username, firstName)
-            } catch (e: Exception) {
-                _binding.saluteTxt.text = getString(R.string.salute_without_username)
-            }
-        } else {
-            _binding.saluteTxt.text = getString(R.string.salute_without_username)
+        val salute = try {
+            val firstName = state.username!!.split(" ")[0]
+            getString(R.string.salute_with_username, firstName)
+        } catch (e: Exception) {
+            getString(R.string.salute_without_username)
         }
+        _binding.saluteTxt.text = salute
     }
 
     private fun observer() {
@@ -153,6 +152,7 @@ class HomeFragment : Fragment(), SwipeTouchHelper.OnTaskEvent,
                                 R.id.floating_btn
                             )
                         }
+
                         is TaskEvent.Delete -> {
                             _binding.root.showSnackBarWithAction(
                                 getString(R.string.task_deleted),
@@ -164,6 +164,7 @@ class HomeFragment : Fragment(), SwipeTouchHelper.OnTaskEvent,
                                 R.id.floating_btn
                             )
                         }
+
                         else -> Unit
                     }
                 }
@@ -176,7 +177,7 @@ class HomeFragment : Fragment(), SwipeTouchHelper.OnTaskEvent,
         taskFilter: TaskFilter
     ) {
         lifecycleScope.launch(Dispatchers.Default) {
-            val recyclerList = viewModel.getRecyclerViewMainList(tasks, taskFilter)
+            val recyclerList = viewModel.getHomeRecyclerList(tasks, taskFilter)
             lifecycleScope.launch(Dispatchers.Main) { adapter.submitList(recyclerList) }
         }
     }
@@ -187,7 +188,7 @@ class HomeFragment : Fragment(), SwipeTouchHelper.OnTaskEvent,
         itemTouchHelper.attachToRecyclerView(_binding.taskRecyclerView)
     }
 
-    override fun onTaskEvent(taskEvent: TaskEvent) {
+    override fun onTaskSwiped(taskEvent: TaskEvent) {
         viewModel.onTaskEvent(taskEvent)
     }
 

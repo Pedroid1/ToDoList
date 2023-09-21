@@ -32,7 +32,6 @@ import com.example.todolistkotlin.util.showSnackBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class CreateCategoryFragment : Fragment(), ColorItemAdapter.onColorSelected,
     IconItemAdapter.onIconSelected {
 
