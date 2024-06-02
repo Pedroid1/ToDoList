@@ -1,123 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:descendantFocusability="blocksDescendants">
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <com.example.todolistkotlin.presentation.components.CustomTextView
-            android:id="@+id/salute_txt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/layout_margin"
-            android:layout_marginTop="@dimen/spacing_15"
-            android:textColor="?attr/colorPrimaryVariant"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:textType="title2"
-            tools:text="Olá, Pedro!" />
-
-        <com.example.todolistkotlin.presentation.components.CustomTextView
-            android:id="@+id/message_txt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/have_productive_day"
-            app:layout_constraintStart_toStartOf="@id/salute_txt"
-            app:layout_constraintTop_toBottomOf="@id/salute_txt"
-            app:textPriority="tertiary"
-            app:textType="subtitle1" />
-
-        <com.example.todolistkotlin.presentation.components.CustomTextView
-            android:id="@+id/txt_tasks"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/layout_margin"
-            android:layout_marginTop="@dimen/spacing_10"
-            android:text="@string/your_tasks"
-            android:textColor="?attr/colorPrimary"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/message_txt"
-            app:textType="title1" />
-
-        <HorizontalScrollView
-            android:id="@+id/scroll_chip"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scrollbars="none"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/txt_tasks">
+            android:layout_height="match_parent"
+            android:descendantFocusability="blocksDescendants">
 
-            <com.google.android.material.chip.ChipGroup
+            <com.example.todolistkotlin.presentation.components.CustomTextView
+                android:id="@+id/salute_txt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/idchip_group"
-                app:selectionRequired="true"
-                app:singleSelection="true">
+                android:layout_marginStart="@dimen/layout_margin"
+                android:layout_marginTop="@dimen/spacing_15"
+                android:textColor="?attr/colorPrimaryVariant"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:textType="title2"
+                tools:text="Olá, Pedro!" />
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_all"
+            <com.example.todolistkotlin.presentation.components.CustomTextView
+                android:id="@+id/message_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/have_productive_day"
+                app:layout_constraintStart_toStartOf="@id/salute_txt"
+                app:layout_constraintTop_toBottomOf="@id/salute_txt"
+                app:textPriority="tertiary"
+                app:textType="subtitle1" />
+
+            <com.example.todolistkotlin.presentation.components.CustomTextView
+                android:id="@+id/txt_tasks"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/layout_margin"
+                android:layout_marginTop="@dimen/spacing_10"
+                android:text="@string/your_tasks"
+                android:textColor="?attr/colorPrimary"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/message_txt"
+                app:textType="title1" />
+
+            <HorizontalScrollView
+                android:id="@+id/scroll_chip"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txt_tasks">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/idchip_group"
                     android:layout_width="wrap_content"
-                    android:checked="true"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/layout_margin"
-                    android:checkable="true"
-                    android:text="@string/all" />
+                    app:selectionRequired="true"
+                    app:singleSelection="true">
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_today"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checkable="true"
-                    android:text="@string/today" />
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_all"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/layout_margin"
+                        android:checkable="true"
+                        android:checked="true"
+                        android:text="@string/all" />
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_upcoming"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checkable="true"
-                    android:text="@string/upcoming" />
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_today"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:text="@string/today" />
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chip_completed"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checkable="true"
-                    android:text="@string/completed" />
-            </com.google.android.material.chip.ChipGroup>
-        </HorizontalScrollView>
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_upcoming"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:text="@string/upcoming" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/task_recycler_view"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layoutAnimation="@anim/layout_anim_task"
-            android:orientation="vertical"
-            android:paddingTop="@dimen/spacing_10"
-            android:paddingBottom="@dimen/spacing_80"
-            android:transitionGroup="true"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/scroll_chip"
-            app:spanCount="1"
-            tools:itemCount="5"
-            tools:listitem="@layout/large_task_item" />
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_completed"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:text="@string/completed" />
+                </com.google.android.material.chip.ChipGroup>
+            </HorizontalScrollView>
 
-        <include
-            android:id="@+id/loading_layout"
-            layout="@layout/loading_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_50"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/task_recycler_view" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/task_recycler_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layoutAnimation="@anim/layout_anim_task"
+                android:orientation="vertical"
+                android:paddingTop="@dimen/spacing_10"
+                android:paddingBottom="@dimen/spacing_80"
+                android:transitionGroup="true"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/scroll_chip"
+                app:spanCount="1"
+                tools:itemCount="5"
+                tools:listitem="@layout/large_task_item" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.core.widget.NestedScrollView>
+            <include
+                android:id="@+id/loading_layout"
+                layout="@layout/loading_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_50"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/task_recycler_view" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floating_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/spacing_20"
+        android:layout_marginBottom="@dimen/spacing_20"
+        android:contentDescription="@string/add_task"
+        android:src="@drawable/ic_add"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

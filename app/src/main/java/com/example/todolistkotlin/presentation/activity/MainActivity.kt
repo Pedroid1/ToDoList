@@ -25,41 +25,24 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initialWork()
-        prepareViewListener();
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.homeFragment -> {
                     showBottomNav(true)
-                    showFloatingButton(true)
-                    binding.floatingBtn.contentDescription = getString(R.string.add_task)
                 }
                 R.id.categoryFragment -> {
                     showBottomNav(true)
-                    showFloatingButton(true)
-                    binding.floatingBtn.contentDescription = getString(R.string.add_category_accessbility)
                 }
                 R.id.calendarFragment -> {
                     showBottomNav(true)
-                    showFloatingButton(true)
-                    binding.floatingBtn.contentDescription = getString(R.string.add_task)
                 }
                 R.id.profileFragment -> {
                     showBottomNav(true)
-                    showFloatingButton(false)
                 }
                 else -> {
-                    showFloatingButton(false)
                     showBottomNav(false)
                 }
             }
-        }
-    }
-
-    private fun showFloatingButton(show: Boolean) {
-        if (show) {
-            binding.floatingBtn.show()
-        } else {
-            binding.floatingBtn.hide()
         }
     }
 
@@ -68,23 +51,6 @@ class MainActivity : AppCompatActivity() {
             binding.bottomNavMain.toVisible()
         } else {
             binding.bottomNavMain.toInvisible()
-        }
-    }
-
-    private fun prepareViewListener() {
-        binding.floatingBtn.setOnClickListener {
-            when (binding.bottomNavMain.selectedItemId) {
-                R.id.homeFragment -> {
-                    navController.navigate(R.id.action_homeFragment_to_createTaskFragment)
-                }
-                R.id.categoryFragment -> {
-                    val action = CategoryFragmentDirections.actionCategoryFragmentToCreateCategoryFragment(CreateCategoryFragment.CATEGORY_ROOT_SCREEN)
-                    navController.navigate(action)
-                }
-                R.id.calendarFragment -> {
-                    navController.navigate(R.id.action_calendarFragment_to_createTaskFragment)
-                }
-            }
         }
     }
 

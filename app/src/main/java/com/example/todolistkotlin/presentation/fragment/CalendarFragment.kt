@@ -67,6 +67,15 @@ class CalendarFragment : Fragment(), CalendarAdapter.OnDayClickListener,
                 setupCalendarView(homeViewModel.taskList)
             }
         }
+
+        _binding.floatingBtn.setOnClickListener {
+            navigateToCreateTaskFragment()
+        }
+    }
+
+    private fun navigateToCreateTaskFragment() {
+        val action = CalendarFragmentDirections.actionCalendarFragmentToCreateTaskFragment()
+        findNavController().navigate(action)
     }
 
     private fun initialWork() {

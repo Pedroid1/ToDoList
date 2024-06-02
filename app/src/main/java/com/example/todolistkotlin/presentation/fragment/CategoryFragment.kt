@@ -10,6 +10,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todolistkotlin.R
@@ -51,6 +52,12 @@ class CategoryFragment : Fragment() {
 
         initialWork()
         observer()
+    }
+
+    private fun setupListeners() {
+        _binding.floatingBtn.setOnClickListener {
+            navigateToCreateCategoryFragment()
+        }
     }
 
     private fun handleCategoryViewState(state: CategoryViewState) {
@@ -104,5 +111,11 @@ class CategoryFragment : Fragment() {
     }
 
     private fun initialWork() {
+        setupListeners()
+    }
+
+    private fun navigateToCreateCategoryFragment() {
+        val action = CategoryFragmentDirections.actionCategoryFragmentToCreateCategoryFragment(CreateCategoryFragment.CATEGORY_ROOT_SCREEN)
+        findNavController().navigate(action)
     }
 }

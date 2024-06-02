@@ -81,6 +81,10 @@ class HomeFragment : Fragment(), SwipeTouchHelper.SwipeTouchHelperEvent,
                 }
             }
         }
+
+        _binding.floatingBtn.setOnClickListener {
+            navigateToCreateTaskFragment()
+        }
     }
 
     private fun undoDeleteTask(task: Any) {
@@ -195,5 +199,10 @@ class HomeFragment : Fragment(), SwipeTouchHelper.SwipeTouchHelperEvent,
     override fun onTaskClicked(task: Task) {
         val directions = HomeFragmentDirections.actionHomeFragmentToTaskDetailFragment(task)
         findNavController().navigate(directions)
+    }
+
+    private fun navigateToCreateTaskFragment() {
+        val action = HomeFragmentDirections.actionHomeFragmentToCreateTaskFragment()
+        findNavController().navigate(action)
     }
 }
